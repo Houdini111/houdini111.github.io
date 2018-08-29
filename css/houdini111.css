@@ -1,0 +1,40 @@
+#resume
+{
+	display: block;
+	width: 834px;
+	height: 720px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#ResumeButton
+{
+	width: 100%;
+}
+
+
+#ResumeButton[aria-expanded="false"] .fa-caret-right
+{
+	transform: rotate(0deg);
+	transition: transform 0.25s;
+}
+
+#ResumeButton[aria-expanded="false"] .fa-caret-left
+{
+	transform: rotate(0deg);
+	transition: transform 0.25s;
+}
+
+#ResumeButton[aria-expanded="true"] .fa-caret-right
+{
+	transform: rotate(90deg);
+	transition: transform 0.25s;
+}
+
+#ResumeButton[aria-expanded="true"] .fa-caret-left
+{
+	transform: rotate(-90deg);
+	transition: transform 0.25s;
+}
