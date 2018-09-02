@@ -1,19 +1,31 @@
-#resume
+#sideColumn 
 {
-	display: block;
-	width: 834px;
-	height: 720px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 10px;
-	margin-bottom: 10px;
+    background-color: #efefef;
+}
+
+.resizable {
+    overflow: auto;
+    resize: both;
+    min-height: 175px;
+    min-width: 360px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#resume {
+    width: 100%;
+    height: calc(100% - 1.5em);
+    margin-top: .5em;
+    margin-bottom: .5em;
 }
 
 #ResumeButton
 {
 	width: 100%;
+    background-color: #BBBBBB;
+    border-radius: .125em;
 }
-
 
 #ResumeButton[aria-expanded="false"] .fa-caret-right
 {
