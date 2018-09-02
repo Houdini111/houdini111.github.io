@@ -3,23 +3,36 @@ body
     font-family: 'Montserrat', sans-serif;
 }
 
+#title
+{
+    text-align: center;
+}
+
 #sideColumn 
 {
     background-color: #efefef;
+    padding: 1em;
+    max-width: 610px;
+}
+
+.paddingEnforcer
+{
+    box-sizing: border-box;
 }
 
 #signature
 {
     width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #signatureSizer 
 {
+    margin: 1em;
     padding: 1em;
     width: 100%;
     max-width: 450px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .profile-links
