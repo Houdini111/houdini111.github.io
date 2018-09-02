@@ -1,6 +1,43 @@
+body
+{
+    font-family: 'Montserrat', sans-serif;
+}
+
 #sideColumn 
 {
     background-color: #efefef;
+}
+
+#signature
+{
+    width: 100%;
+}
+
+#signatureSizer 
+{
+    padding: 1em;
+    width: 100%;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-links
+{
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 4em;
+}
+
+.fa-github-square 
+{
+    color: #4078c0;
+}
+
+.fa-linkedin
+{
+    color: #0077B5;
 }
 
 .resizable {
@@ -9,6 +46,7 @@
     min-height: 175px;
     min-width: 360px;
     max-width: 720px;
+    height: 500px;
     margin-left: auto;
     margin-right: auto;
 }
