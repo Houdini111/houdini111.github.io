@@ -1,11 +1,14 @@
 body
 {
     font-family: 'Montserrat', sans-serif;
+    background-color: #FBFBFC;
 }
 
 #title
 {
     text-align: center;
+    font-size: 4em;
+    padding: 1em 0 1em 0;
 }
 
 #sideColumn 
@@ -62,6 +65,7 @@ body
     height: 500px;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
 }
 
 #resume {
@@ -71,33 +75,72 @@ body
     margin-bottom: .5em;
 }
 
-#ResumeButton
-{
-	width: 100%;
-    background-color: #BBBBBB;
+.MainColumnExpandingButton {
+    width: 100%;
     border-radius: .125em;
 }
 
-#ResumeButton[aria-expanded="false"] .fa-caret-right
-{
-	transform: rotate(0deg);
-	transition: transform 0.25s;
+.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right {
+    transform: rotate(0deg);
+    transition: transform 0.25s;
 }
 
-#ResumeButton[aria-expanded="false"] .fa-caret-left
-{
-	transform: rotate(0deg);
-	transition: transform 0.25s;
+.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left {
+    transform: rotate(0deg);
+    transition: transform 0.25s;
 }
 
-#ResumeButton[aria-expanded="true"] .fa-caret-right
-{
-	transform: rotate(90deg);
-	transition: transform 0.25s;
+.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right {
+    transform: rotate(90deg);
+    transition: transform 0.25s;
 }
 
-#ResumeButton[aria-expanded="true"] .fa-caret-left
+.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left {
+    transform: rotate(-90deg);
+    transition: transform 0.25s;
+}
+
+.lightShadeBG
 {
-	transform: rotate(-90deg);
-	transition: transform 0.25s;
+    background-color: #FBFBFC;
+}
+
+.lightAccentBG
+{
+    background-color: #77A3C3;
+}
+
+.mainColorBG
+{
+    background-color: #3376EE;
+}
+
+.darkAccentBG
+{
+    background-color: #67657F;
+}
+
+.darkShadeBG
+{
+    background-color: #1E2542;
+}
+
+.lightShadeFT {
+    color: #FBFBFC;
+}
+
+.lightAccentFT {
+    color: #77A3C3;
+}
+
+.mainColorFT {
+    color: #3376EE;
+}
+
+.darkAccentFT {
+    color: #67657F;
+}
+
+.darkShadeFT {
+    color: #1E2542;
 }
