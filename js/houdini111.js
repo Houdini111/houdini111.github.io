@@ -1,3 +1,16 @@
+function finalize()
+{
+    PR.prettyPrint();
+    noDrag();
+}
+
+function noDrag()
+{
+    var elements = document.querySelectorAll('noDrag');
+    for (i = 0; i < elements.length; i++){ elements[i].draggable = false; }
+}
+
+
 function resizeCheck()
 {
     if ($(window).width() <= 992) { removeBorder(); }

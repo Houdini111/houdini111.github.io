@@ -10,43 +10,27 @@
     <title>Alex Fenton</title>
 
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-grid.min.css">
-    <link rel="stylesheet" href="css/bootstrap-reboot.min.css"> -->
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-
-    <!-- Custom CSS -->
-    <link href="css/houdini111.css" rel="stylesheet">
-
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <!--<script src="js/bootstrap.min.js"></script>-->
     <!-- JQuery -->
     <script src="js/jquery-3.3.1.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-reboot.min.css" />
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="fontawesome/css/all.min.css" />
+    <script defer src="fontawesome/js/all.min.js"></script>
 
     <!-- Code Prettify -->
     <script src="js/code-prettify/prettify.js"></script>
     <link rel="stylesheet" type="text/css" href="js/code-prettify/styles/desert.css">
-    <style> .prettyprint ol.linenums > li { list-style-type: decimal; } </style>
-
-    <!-- Custom JS -->
-    <script src="js/houdini111.js"></script>
-
 
     <!-- Custom Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <!--<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
@@ -57,17 +41,100 @@
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml">
     <meta name="theme-color" content="#000000">
+
+    <!-- Custom CSS -->
+    <link href="css/houdini111.css" rel="stylesheet">
+
+    <!-- Custom JS -->
+    <script src="js/houdini111.js"></script>
 </head>
 
-    <body class=".container-fluid" onload="PR.prettyPrint()" onresize="resizeCheck()">
+    <body class=".container-fluid" onload="finalize()" onresize="resizeCheck()">
         <div class="row no-margin">
             <div class="col-lg-12">
                 <h1 id="title">Alexander Fenton</h1>
+            </div>
+
+            <div class="container">
+                <div class="row text-center d-flex justify-content-center mt-1 mb-5">
+                    <div class="col-md-2">
+                        <h6 class="text-uppercase font-weight-bold lightAccentFT">
+                            <a class="btn btn-default meetBox noDrag" type="button" data-toggle="collapse" data-target="#AboutMe" aria-expanded="false" aria-controls="AboutMe" aria-role="button">About Me</a>
+                        </h6>
+                    </div>
+                    <div class="col-md-2">
+                        <h6 class="text-uppercase font-weight-bold lightAccentFT">
+                            <a class="btn btn-default meetBox noDrag" type="button" data-toggle="collapse" data-target="#Projects" aria-expanded="false" aria-controls="Projects" aria-role="button">Projects</a>
+                        </h6>
+                    </div>
+                    <div class="col-md-2">
+                        <h6 class="text-uppercase font-weight-bold lightAccentFT">
+                            <a class="btn btn-default meetBox noDrag" type="button" data-toggle="collapse" data-target="#Awards" aria-expanded="false" aria-controls="Awards" aria-role="button">Awards</a>
+                        </h6>
+                    </div>
+                    <div class="col-md-2">
+                        <h6 class="text-uppercase font-weight-bold lightAccentFT">
+                            <a class="btn btn-default meetBox noDrag" type="button" data-toggle="collapse" data-target="#Skills" aria-expanded="false" aria-controls="Skills" aria-role="button">Skills</a>
+                        </h6>
+                    </div>
+                    <div class="col-md-2">
+                        <h6 class="text-uppercase font-weight-bold lightAccentFT">
+                            <a class="btn btn-default meetBox noDrag" type="button" data-toggle="collapse" data-target="#ContactMe" aria-expanded="false" aria-controls="ContactMe" aria-role="button">Contact Me</a>
+                        </h6>
+                    </div>
+                </div>
+
+                <hr class="clearfix d-md-none rgba-white-light" style="margin: 10% 15% 5%;">
             </div>
         </div>
         <div class="row no-margin">
             <div class="col-xs-0 col-lg-1 col-xl-2"></div>
             <div class="col-xs-8 col-lg-7 col-xl-6 main-col">
+                <div class="expando-container">
+                    <div class="collapse" id="AboutMe">
+                        <div class="expando-content">
+                            1
+                        </div>
+                    </div>
+                    <div class="collapse" id="Projects">
+                        <div class="expando-content">
+                            <pre class="prettyprint linenums lang-cpp">
+#define _USE_MATH_DEFINES  //Microsoft only
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main ()
+{
+	double V, S, r, h;
+	cout << "What is the radius and height? \n";
+	cin >> r >> h;
+	V = (1. / 3.) * M_PI * r * r * h;
+	S = (M_PI * r * r) + ((M_PI * r) * sqrt((r*r) + (h*h)));
+	cout << V << endl;
+	cout << S << endl;
+}
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="collapse" id="Awards">
+                        <div class="expando-content">
+                            <p>Eagle Scout Award</p>
+                        </div>
+                    </div>
+                    <div class="collapse" id="Skills">
+                        <div class="expando-content">
+                            4
+                        </div>
+                    </div>
+                    <div class="collapse" id="ContactMe">
+                        <div class="expando-content">
+                            <p>Email: xela.notnef@gmail.com</p>
+                            <p>Cell: 385-333-6036</p>
+                        </div>
+                    </div>
+                </div>
+                <!--
                 <div class="expando-container">
                     <a class="btn btn-default MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#ContactDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
                         <span class="MainColumnExpandingText">
@@ -131,6 +198,7 @@ int main ()
                     </div>
                     <div class="expando-separator"></div>
                 </div>
+                -->
             </div>
             <div id="sideColumn" class="col-xs-4 col-lg-3 col-xl-2">
                 <div class="row">
@@ -138,13 +206,22 @@ int main ()
                         <img id="signature" src="assets/SignatureV4.png" alt="Alex Fenton's Signature" />
                     </div>
                 </div>
-                <hr />
+                <hr class="right-col-hr" />
                 <div class="row">
                     <div class="col-sm">
-                        <a href="https://github.com/Houdini111/" target="_blank" alt="View my work on GitHub"><i class="fab fa-github-square profile-links"></i></a>
+                        <p class="text-center">
+                            <a href="https://github.com/Houdini111/" target="_blank" alt="View my work on GitHub">
+                                <i class="fab fa-github-square fa-4x"></i>
+                            </a>
+                        </p>
+                        
                     </div>
                     <div class="col-sm">
-                        <a href="https://www.linkedin.com/in/alex-fenton111/" target="_blank" alt="View my Linked In Profile"><i class="fab fa-linkedin profile-links"></i></a>
+                        <p class="text-center">
+                            <a href="https://www.linkedin.com/in/alex-fenton111/" target="_blank" alt="View my Linked In Profile" class="profile-link-container">
+                                <i class="fab fa-linkedin profile-link fa-4x"></i>
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -153,49 +230,7 @@ int main ()
 
 
         <footer class="page-footer font-small indigo">
-            <div class="container">
-                <div class="row text-center d-flex justify-content-center pt-5 mb-3">
-                    <div class="col-md-2 mb-3">
-                        <h6 class="text-uppercase font-weight-bold">
-                            <a href="#!">About us</a>
-                        </h6>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <h6 class="text-uppercase font-weight-bold">
-                            <a href="#!">Products</a>
-                        </h6>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <h6 class="text-uppercase font-weight-bold">
-                            <a href="#!">Awards</a>
-                        </h6>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <h6 class="text-uppercase font-weight-bold">
-                            <a href="#!">Help</a>
-                        </h6>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <h6 class="text-uppercase font-weight-bold">
-                            <a href="#!">Contact</a>
-                        </h6>
-                    </div>
-                </div>
-
-                <hr class="rgba-white-light" style="margin: 0 15%;">
-
-                <div class="row d-flex text-center justify-content-center mb-md-0 mb-4">
-                    <div class="col-md-8 col-12 mt-5">
-                        <p style="line-height: 1.7rem">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem
-                            aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.
-                        </p>
-                    </div>
-                </div>
-                <hr class="clearfix d-md-none rgba-white-light" style="margin: 10% 15% 5%;">
-            </div>
-
+            <hr class="rgba-white-light footer-separator mt-5" />
             <div class="footer-copyright text-center py-3">
                 © 2018 Copyright: Alexander Thomas Fenton
             </div>

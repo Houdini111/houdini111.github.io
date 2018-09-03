@@ -1,229 +1,369 @@
-body
-{
-    font-family: 'Montserrat', sans-serif;
-    background-color: #FBFBFC;
-}
+@font-face {
+  font-family: "Montserrat";
+  src: url(); }
+.prettyprint ol.linenums > li {
+  list-style-type: decimal; }
 
-#title
-{
-    text-align: center;
-    font-size: 4em;
-    padding: 1em 0 1em 0;
-}
+.text-center {
+  text-align: center; }
 
-.no-margin
-{
-    margin: 0;
-}
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #FBFBFC; }
 
-#sideColumn 
-{
-    padding: 1em;
-    border-left: 1px solid black;
-}
+#title {
+  text-align: center;
+  font-size: 4em;
+  padding: 1em 0 1em 0; }
 
-#signature
-{
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
+.no-margin {
+  margin: 0; }
 
-#signatureSizer 
-{
-    margin: 1em;
-    padding: 1em;
-    width: 100%;
-    max-width: 450px;
-}
+#sideColumn {
+  padding: 1em;
+  border-left: 1px solid black; }
 
-.profile-links
-{
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    font-size: 4em;
-}
+#signature {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto; }
 
-.fa-github-square 
-{
-    color: #4078c0;
-}
+#signatureSizer {
+  margin: 1em;
+  padding: 1em;
+  width: 100%;
+  max-width: 450px; }
 
-.fa-linkedin
-{
-    color: #0077B5;
-}
+.right-col-hr {
+  margin-top: 2em;
+  margin-bottom: 2em; }
 
-.expando-content 
-{
-    padding: 0.5em;
-}
+.fa-github-square {
+  color: #4078c0; }
 
-.expando-content .collapse
-{
-    margin: 1em;
-}
+.fa-linkedin {
+  color: #0077B5; }
 
-.resizable 
-{
-    overflow: auto;
-    resize: both;
-    min-height: 175px;
-    min-width: 360px;
-    max-width: 720px;
-    height: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
+.expando-content {
+  padding: 0.5em; }
+  .expando-content .collapse {
+    margin: 1em; }
 
-#resume 
-{
-    width: 100%;
-    height: calc(100% - 1.5em);
-    margin-top: .5em;
-    margin-bottom: .5em;
-    border: 1px black solid;
-}
+.resizable {
+  overflow: auto;
+  resize: both;
+  min-height: 175px;
+  min-width: 360px;
+  max-width: 720px;
+  height: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%; }
 
-.MainColumnExpandingButton 
-{
-    width: 100%;
-    border-radius: .125em;
-    border: 1px black solid;
-}
+#resume {
+  width: 100%;
+  height: calc(100% - 1.5em);
+  margin-top: .5em;
+  margin-bottom: .5em;
+  border: 1px black solid; }
 
-.MainColumnExpandingButton[aria-expanded="false"]
-{
+.MainColumnExpandingButton {
+  width: 100%;
+  border-radius: .125em;
+  border: 1px black solid; }
+  .MainColumnExpandingButton .fa-caret-right, .MainColumnExpandingButton .fa-caret-left {
+    padding: 0.25em; }
+  .MainColumnExpandingButton[aria-expanded="false"] {
     background-color: #FBFBFC;
     border: 1px black solid;
-    transition: background-color 0.35s;
-    transition: border 0.35s;
-}
-
-.MainColumnExpandingButton[aria-expanded="true"] 
-{
+    -webkit-transition: background-color, 0.35s;
+    -moz-transition: background-color, 0.35s;
+    -o-transition: background-color, 0.35s;
+    -ms-transition: background-color, 0.35s;
+    transition: background-color, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */
+    -webkit-transition: border, 0.35s;
+    -moz-transition: border, 0.35s;
+    -o-transition: border, 0.35s;
+    -ms-transition: border, 0.35s;
+    transition: border, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */ }
+    .MainColumnExpandingButton[aria-expanded="false"] > .MainColumnExpandingText {
+      color: #1E2542;
+      -webkit-transition: color, 0.35s;
+      -moz-transition: color, 0.35s;
+      -o-transition: color, 0.35s;
+      -ms-transition: color, 0.35s;
+      transition: color, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right {
+      transform: rotate(0deg);
+      -webkit-transition: transform, 0.35s;
+      -moz-transition: transform, 0.35s;
+      -o-transition: transform, 0.35s;
+      -ms-transition: transform, 0.35s;
+      transition: transform, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left {
+      transform: rotate(0deg);
+      -webkit-transition: rotate(0deg), 0.35s;
+      -moz-transition: rotate(0deg), 0.35s;
+      -o-transition: rotate(0deg), 0.35s;
+      -ms-transition: rotate(0deg), 0.35s;
+      transition: rotate(0deg), 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="false"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="false"] + .collapse + .expando-separator {
+      padding-top: 1em;
+      -webkit-transition: padding-top, 0.35s;
+      -moz-transition: padding-top, 0.35s;
+      -o-transition: padding-top, 0.35s;
+      -ms-transition: padding-top, 0.35s;
+      transition: padding-top, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+  .MainColumnExpandingButton[aria-expanded="true"] {
     background-color: #77A3C3;
     border: 1px #77A3C3 solid;
-    transition: background-color 0.35s;
-    transition: border 0.35s;
-}
+    -webkit-transition: background-color, 0.35s;
+    -moz-transition: background-color, 0.35s;
+    -o-transition: background-color, 0.35s;
+    -ms-transition: background-color, 0.35s;
+    transition: background-color, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */
+    -webkit-transition: border, 0.35s;
+    -moz-transition: border, 0.35s;
+    -o-transition: border, 0.35s;
+    -ms-transition: border, 0.35s;
+    transition: border, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */ }
+    .MainColumnExpandingButton[aria-expanded="true"] > .MainColumnExpandingText {
+      color: #FBFBFC;
+      -webkit-transition: color, 0.35s;
+      -moz-transition: color, 0.35s;
+      -o-transition: color, 0.35s;
+      -ms-transition: color, 0.35s;
+      transition: color, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right {
+      transform: rotate(90deg);
+      -webkit-transition: transform, 0.35s;
+      -moz-transition: transform, 0.35s;
+      -o-transition: transform, 0.35s;
+      -ms-transition: transform, 0.35s;
+      transition: transform, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left {
+      transform: rotate(-90deg);
+      -webkit-transition: transform, 0.35s;
+      -moz-transition: transform, 0.35s;
+      -o-transition: transform, 0.35s;
+      -ms-transition: transform, 0.35s;
+      transition: transform, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .MainColumnExpandingButton[aria-expanded="true"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="true"] + .collapse + .expando-separator {
+      padding-top: 0em;
+      -webkit-transition: padding-top, 0.35s;
+      -moz-transition: padding-top, 0.35s;
+      -o-transition: padding-top, 0.35s;
+      -ms-transition: padding-top, 0.35s;
+      transition: padding-top, 0.35s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
 
-.MainColumnExpandingButton[aria-expanded="false"] > .MainColumnExpandingText
-{
-    color: #1E2542;
-    transition: color 0.35s;
-}
+.collapse + .expando-separator {
+  display: block;
+  padding-top: 1em; }
 
-.MainColumnExpandingButton[aria-expanded="true"] > .MainColumnExpandingText
-{
-    color: #FBFBFC;
-    transition: color 0.35s;
-}
+.footer-separator {
+  margin-left: 15%;
+  margin-right: 15%; }
 
-.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right 
-{
-    padding: 0.25em;
-    transform: rotate(0deg);
-    transition: transform 0.35s;
-}
+.centerText {
+  text-align: center; }
 
-.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left 
-{
-    padding: 0.25em;
-    transform: rotate(0deg);
-    transition: transform 0.35s;
-}
-
-.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right 
-{
-    padding: 0.25em;
-    transform: rotate(90deg);
-    transition: transform 0.35s;
-}
-
-.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left 
-{
-    padding: 0.25em;
-    transform: rotate(-90deg);
-    transition: transform 0.35s;
-}
-
-.fa-caret-right 
-{
-    padding-right: 0.25em;
-}
-
-.fa-caret-left
-{
-    padding-left: 0.25em;
-}
-
-.collapse + .expando-separator
-{
-    display: block;
-    padding-top: 1em;
-}
-
-.MainColumnExpandingButton[aria-expanded="false"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="false"] + .collapse + .expando-separator
-{
-    padding-top: 1em;
-    transition: padding-top 0.35s;
-}
-
-.MainColumnExpandingButton[aria-expanded="true"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="true"] + .collapse + .expando-separator
-{
-    padding-top: 0em;
-    transition: padding-top 0.35s;
-}
-
-.centerText 
-{
-    text-align: center;
-}
-
-.lightShadeBG
-{
-    background-color: #FBFBFC;
-}
-
-.lightAccentBG
-{
-    background-color: #77A3C3;
-}
-
-.mainColorBG
-{
-    background-color: #3376EE;
-}
-
-.darkAccentBG
-{
-    background-color: #67657F;
-}
-
-.darkShadeBG
-{
+.centerUnderlined {
+  text-decoration: none; }
+  .centerUnderlined:hover {
+    text-decoration: none;
+    color: #1E2542; }
+  .centerUnderlined:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
     background-color: #1E2542;
-}
+    visibility: hidden;
+    transform: scaleX(0);
+    -webkit-transition: all, 0.35s;
+    -moz-transition: all, 0.35s;
+    -o-transition: all, 0.35s;
+    -ms-transition: all, 0.35s;
+    transition: all, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */ }
+  .centerUnderlined:hover:before {
+    visibility: visible;
+    transform: scaleX(1);
+    -webkit-transition: all, 0.35s;
+    -moz-transition: all, 0.35s;
+    -o-transition: all, 0.35s;
+    -ms-transition: all, 0.35s;
+    transition: all, 0.35s;
+    /*
+    -webkit-transition: $property $time;
+    -moz-transition: $property $time;
+    -o-transition: $property $time;
+    -ms-transition: $property $time;
+    transition: $property $time;
+    */ }
 
-.lightShadeFT {
-    color: #FBFBFC;
-}
+.meetBox {
+  border: 0;
+  box-sizing: border-box;
+  padding: 1em 2em;
+  box-shadow: inset 0 0 0 2px #FBFBFC;
+  font-weight: inherit;
+  position: relative;
+  vertical-align: middle;
+  color: #77A3C3;
+  -webkit-transition: color 0.35s;
+  -moz-transition: color 0.35s;
+  -o-transition: color 0.35s;
+  -ms-transition: color 0.35s;
+  transition: color 0.35s;
+  /*
+  -webkit-transition: $property $time;
+  -moz-transition: $property $time;
+  -o-transition: $property $time;
+  -ms-transition: $property $time;
+  transition: $property $time;
+  */ }
+  .meetBox::before, .meetBox::after {
+    box-sizing: inherit;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    width: 0;
+    height: 0; }
+  .meetBox::before {
+    top: 0;
+    left: 0; }
+  .meetBox::after {
+    top: 0;
+    left: 0; }
+  .meetBox:hover {
+    color: #67657F; }
+    .meetBox:hover::before, .meetBox:hover::after {
+      width: 100%;
+      height: 100%; }
+    .meetBox:hover::before {
+      border-top-color: #67657F;
+      border-right-color: #67657F;
+      -webkit-transition: width 0.175s ease-out, height 0.175s ease-out 0.175s;
+      -moz-transition: width 0.175s ease-out, height 0.175s ease-out 0.175s;
+      -o-transition: width 0.175s ease-out, height 0.175s ease-out 0.175s;
+      -ms-transition: width 0.175s ease-out, height 0.175s ease-out 0.175s;
+      transition: width 0.175s ease-out, height 0.175s ease-out 0.175s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
+    .meetBox:hover::after {
+      border-bottom-color: #67657F;
+      border-left-color: #67657F;
+      -webkit-transition: height 0.175s ease-out, width 0.175s ease-out 0.175s;
+      -moz-transition: height 0.175s ease-out, width 0.175s ease-out 0.175s;
+      -o-transition: height 0.175s ease-out, width 0.175s ease-out 0.175s;
+      -ms-transition: height 0.175s ease-out, width 0.175s ease-out 0.175s;
+      transition: height 0.175s ease-out, width 0.175s ease-out 0.175s;
+      /*
+      -webkit-transition: $property $time;
+      -moz-transition: $property $time;
+      -o-transition: $property $time;
+      -ms-transition: $property $time;
+      transition: $property $time;
+      */ }
 
-.lightAccentFT {
-    color: #77A3C3;
-}
-
-.mainColorFT {
-    color: #3376EE;
-}
-
-.darkAccentFT {
-    color: #67657F;
-}
-
-.darkShadeFT {
-    color: #1E2542;
-}
+/*# sourceMappingURL=houdini111.css.map */
