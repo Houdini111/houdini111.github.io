@@ -18,11 +18,6 @@ body
     max-width: 610px;
 }
 
-.paddingEnforcer
-{
-    box-sizing: border-box;
-}
-
 #signature
 {
     width: 100%;
@@ -56,7 +51,23 @@ body
     color: #0077B5;
 }
 
-.resizable {
+.main-col
+{
+    padding-left: 30px;
+}
+
+.expando-content 
+{
+    padding: 0.5em;
+}
+
+.expando-content .collapse
+{
+    margin: 1em;
+}
+
+.resizable 
+{
     overflow: auto;
     resize: both;
     min-height: 175px;
@@ -68,36 +79,60 @@ body
     width: 100%;
 }
 
-#resume {
+#resume 
+{
     width: 100%;
     height: calc(100% - 1.5em);
     margin-top: .5em;
     margin-bottom: .5em;
 }
 
-.MainColumnExpandingButton {
+.MainColumnExpandingButton 
+{
     width: 100%;
     border-radius: .125em;
 }
 
-.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right {
+.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right 
+{
     transform: rotate(0deg);
     transition: transform 0.25s;
 }
 
-.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left {
+.MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left 
+{
     transform: rotate(0deg);
     transition: transform 0.25s;
 }
 
-.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right {
+.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right 
+{
     transform: rotate(90deg);
     transition: transform 0.25s;
 }
 
-.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left {
+.MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left 
+{
     transform: rotate(-90deg);
     transition: transform 0.25s;
+}
+
+.collapse + .expando-separator
+{
+    display: block;
+    padding-top: 1em;
+}
+
+.MainColumnExpandingButton[aria-expanded="false"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="false"] + .collapse + .expando-separator
+{
+    padding-top: 1em;
+    transition: padding-top 0.5s;
+}
+
+.MainColumnExpandingButton[aria-expanded="true"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="true"] + .collapse + .expando-separator
+{
+    padding-top: 0em;
+    transition: padding-top 0.5s;
 }
 
 .lightShadeBG

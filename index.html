@@ -23,16 +23,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <!--<script src="js/bootstrap.min.js"></script>-->
-    
     <!-- JQuery -->
     <script src="js/jquery-3.3.1.min.js"></script>
+
+    <!-- Code Prettify -->
+    <script src="js/code-prettify/prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/code-prettify/styles/desert.css">
+    <style> .prettyprint ol.linenums > li { list-style-type: decimal; } </style>
 
     <!-- Custom JS -->
     <script src="js/houdini111.js"></script>
 
 
     <!-- Custom Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <!--<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,8 +44,6 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
-
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
@@ -54,32 +56,72 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 
-    <body>
+    <body onload="PR.prettyPrint()">
         <div class="row">
             <div class="col-lg-12">
                 <h1 id="title">Alexander Fenton</h1>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-8">
-                <a class="btn btn-default lightAccentBG MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#ContactDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
-                    <span class="lightShadeFT">
-                        <i class="fas fa-caret-right"></i> Contact Info <i class="fas fa-caret-left"></i>
-                    </span>
-                </a>
-                <div class="collapse" id="ContactDiv">
-                    CONTENT HERE
+            <div class="col-lg-8 main-col">
+                <div class="expando-container">
+                    <a class="btn btn-default lightAccentBG MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#ContactDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
+                        <span class="lightShadeFT">
+                            <i class="fas fa-caret-right"></i> Contact Info <i class="fas fa-caret-left"></i>
+                        </span>
+                    </a>
+                    <div class="collapse" id="ContactDiv">
+                        <div class="expando-content">
+                            CONTENT HERE
+                        </div>
+                    </div>
+                    <div class="expando-separator"></div>
                 </div>
                 
-                <a class="btn btn-default lightAccentBG MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#ResumeDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
-                    <span class="lightShadeFT">
-                        <i class="fas fa-caret-right"></i> View Resume <i class="fas fa-caret-left"></i>
-                    </span>
-                </a>
-                <div class="collapse" id="ResumeDiv">
-                    <div class="resizable">
-                        <iframe id="resume" src="https://docs.google.com/document/d/e/2PACX-1vTzmbIG38bqYK08RKfr2J4cVMpvVKO4gmJPMXgz4JylGmSEoqL-oIy6wQGcRnUleEosWQy_7y2v6QR1/pub?embedded=true"></iframe>
+                <div class="expando-container">
+                    <a class="btn btn-default lightAccentBG MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#ResumeDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
+                        <span class="lightShadeFT">
+                            <i class="fas fa-caret-right"></i> View Resume <i class="fas fa-caret-left"></i>
+                        </span>
+                    </a>
+                    <div class="collapse" id="ResumeDiv">
+                        <div class="expando-content">
+                            <div class="resizable">
+                                <iframe id="resume" src="https://docs.google.com/document/d/e/2PACX-1vTzmbIG38bqYK08RKfr2J4cVMpvVKO4gmJPMXgz4JylGmSEoqL-oIy6wQGcRnUleEosWQy_7y2v6QR1/pub?embedded=true"></iframe>
+                            </div>
+                        </div>
                     </div>
+                    <div class="expando-separator"></div>
+                </div>
+
+                <div class="expando-container">
+                    <a class="btn btn-default lightAccentBG MainColumnExpandingButton" type="button" data-toggle="collapse" data-target="#SampleDiv" aria-expanded="false" aria-controls="ResumeDiv" aria-role="button">
+                        <span class="lightShadeFT">
+                            <i class="fas fa-caret-right"></i> View Sample Code <i class="fas fa-caret-left"></i>
+                        </span>
+                    </a>
+                    <div class="collapse" id="SampleDiv">
+                        <div class="expando-content">
+                            <pre class="prettyprint linenums lang-cpp">
+#define _USE_MATH_DEFINES  //Microsoft only
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main ()
+{
+	double V, S, r, h;
+	cout << "What is the radius and height? \n";
+	cin >> r >> h;
+	V = (1. / 3.) * M_PI * r * r * h;
+	S = (M_PI * r * r) + ((M_PI * r) * sqrt((r*r) + (h*h)));
+	cout << V << endl;
+	cout << S << endl;
+}
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="expando-separator"></div>
                 </div>
             </div>
             <div id="sideColumn" class="col-lg-4">
