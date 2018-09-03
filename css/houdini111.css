@@ -96,25 +96,25 @@ body
 .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right 
 {
     transform: rotate(0deg);
-    transition: transform 0.25s;
+    transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left 
 {
     transform: rotate(0deg);
-    transition: transform 0.25s;
+    transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right 
 {
     transform: rotate(90deg);
-    transition: transform 0.25s;
+    transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left 
 {
     transform: rotate(-90deg);
-    transition: transform 0.25s;
+    transition: transform 0.35s;
 }
 
 .collapse + .expando-separator
@@ -126,13 +126,13 @@ body
 .MainColumnExpandingButton[aria-expanded="false"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="false"] + .collapse + .expando-separator
 {
     padding-top: 1em;
-    transition: padding-top 0.5s;
+    transition: padding-top 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="true"] + .collapsing + .expando-separator, .MainColumnExpandingButton[aria-expanded="true"] + .collapse + .expando-separator
 {
     padding-top: 0em;
-    transition: padding-top 0.5s;
+    transition: padding-top 0.35s;
 }
 
 .lightShadeBG
