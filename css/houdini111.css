@@ -53,7 +53,7 @@ body
 
 .main-col
 {
-    padding-left: 30px;
+    padding-left: 45px;
 }
 
 .expando-content 
@@ -115,6 +115,16 @@ body
 {
     transform: rotate(-90deg);
     transition: transform 0.35s;
+}
+
+.fa-caret-right 
+{
+    padding-right: 0.25em;
+}
+
+.fa-caret-left
+{
+    padding-left: 0.25em;
 }
 
 .collapse + .expando-separator
