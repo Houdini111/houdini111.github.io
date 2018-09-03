@@ -72,6 +72,8 @@ body
     padding: 1em;
     width: 100%;
     max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .right-col-hr
@@ -249,6 +251,11 @@ body
 }
 
 .meetBox {
+    background: none;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+
     border: 0;
     box-sizing: border-box;
     padding: 1em 2em;
@@ -256,11 +263,13 @@ body
     font-weight: inherit;
     position: relative;
     vertical-align: middle;
+    border-radius: 0;
+
     color: $lightAccent;
     @include transition(color $bootstrapTransitionTime);
 
-    &::before,
-    &::after {
+    &::before, &::after 
+    {
         box-sizing: inherit;
         content: '';
         position: absolute;
@@ -271,34 +280,51 @@ body
         height: 0;
     }
 
-    &::before {
+    &::before, &::after 
+    {
         top: 0;
         left: 0;
     }
 
-    &::after {
-        top: 0;
-        left: 0;
+    &[aria-expanded="false"] 
+    {
+        &:hover 
+        {
+            color: $darkAccent;
+
+            &::before, &::after 
+            {
+                width: 100%;
+                height: 100%;
+            }
+
+            &::before 
+            {
+                border-top-color: $darkAccent;
+                border-right-color: $darkAccent;
+                @include transition(width $bootstrapTransitionTime/2 ease-out, height $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
+            }
+
+            &::after 
+            {
+                border-bottom-color: $darkAccent;
+                border-left-color: $darkAccent;
+                @include transition(height $bootstrapTransitionTime/2 ease-out, width $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
+            }
+        }
     }
+    
+    &[aria-expanded="true"] 
+    {
+        background-color: $lightAccent;
 
-    &:hover {
-        color: $darkAccent;
-
-        &::before, &::after {
+        &::before, &::after 
+        {
+            border-color: $darkAccent;
             width: 100%;
             height: 100%;
-        }
-
-        &::before {
-            border-top-color: $darkAccent;
-            border-right-color: $darkAccent;
-            @include transition(width $bootstrapTransitionTime/2 ease-out, height $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
-        }
-
-        &::after {
-            border-bottom-color: $darkAccent;
-            border-left-color: $darkAccent;
-            @include transition(height $bootstrapTransitionTime/2 ease-out, width $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
+            transition: none;
         }
     }
+    
 }
