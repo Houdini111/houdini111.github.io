@@ -84,6 +84,7 @@ body
     height: calc(100% - 1.5em);
     margin-top: .5em;
     margin-bottom: .5em;
+    border: 1px black solid;
 }
 
 .MainColumnExpandingButton 
@@ -175,6 +176,11 @@ body
 {
     padding-top: 0em;
     transition: padding-top 0.35s;
+}
+
+.centerText 
+{
+    text-align: center;
 }
 
 .lightShadeBG
