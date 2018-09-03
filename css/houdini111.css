@@ -11,11 +11,15 @@ body
     padding: 1em 0 1em 0;
 }
 
+.no-margin
+{
+    margin: 0;
+}
+
 #sideColumn 
 {
-    background-color: #efefef;
     padding: 1em;
-    max-width: 610px;
+    border-left: 1px solid black;
 }
 
 #signature
@@ -49,11 +53,6 @@ body
 .fa-linkedin
 {
     color: #0077B5;
-}
-
-.no-margin
-{
-    margin: 0;
 }
 
 .expando-content 
@@ -91,28 +90,61 @@ body
 {
     width: 100%;
     border-radius: .125em;
+    border: 1px black solid;
+}
+
+.MainColumnExpandingButton[aria-expanded="false"]
+{
+    background-color: #FBFBFC;
+    border: 1px black solid;
+    transition: background-color 0.35s;
+    transition: border 0.35s;
+}
+
+.MainColumnExpandingButton[aria-expanded="true"] 
+{
+    background-color: #77A3C3;
+    border: 1px #77A3C3 solid;
+    transition: background-color 0.35s;
+    transition: border 0.35s;
+}
+
+.MainColumnExpandingButton[aria-expanded="false"] > .MainColumnExpandingText
+{
+    color: #1E2542;
+    transition: color 0.35s;
+}
+
+.MainColumnExpandingButton[aria-expanded="true"] > .MainColumnExpandingText
+{
+    color: #FBFBFC;
+    transition: color 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-right 
 {
+    padding: 0.25em;
     transform: rotate(0deg);
     transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="false"] .fa-caret-left 
 {
+    padding: 0.25em;
     transform: rotate(0deg);
     transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-right 
 {
+    padding: 0.25em;
     transform: rotate(90deg);
     transition: transform 0.35s;
 }
 
 .MainColumnExpandingButton[aria-expanded="true"] .fa-caret-left 
 {
+    padding: 0.25em;
     transform: rotate(-90deg);
     transition: transform 0.35s;
 }
