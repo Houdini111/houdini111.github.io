@@ -51,9 +51,9 @@ body
     color: #0077B5;
 }
 
-.main-col
+.no-margin
 {
-    padding-left: 45px;
+    margin: 0;
 }
 
 .expando-content 
