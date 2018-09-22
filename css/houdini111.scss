@@ -13,13 +13,6 @@ $bootstrapTransitionTime: 0.35s;
     -o-transition: $args;
     -ms-transition: $args;
     transition: $args;
-    /*
-    -webkit-transition: $property $time;
-    -moz-transition: $property $time;
-    -o-transition: $property $time;
-    -ms-transition: $property $time;
-    transition: $property $time;
-    */
 }
 
 @font-face
@@ -206,6 +199,41 @@ body
     padding-top: 1em;
 }
 
+
+.expando-parent
+{
+    &.show, &.collapsing
+    {
+        ~ .expando-parent
+        {
+            &.show::before, &.collapsing::before
+            {
+                content: "\00a0 ";
+                display: inline-block;
+                height: 1px;
+                width: 100%;
+                background-color: lightgray;
+            }
+        }
+    }
+}
+
+/*
+.expando-parent
+{
+    &.show + .expando-parent, &.collapsing + .expando-content
+    {
+        &.show::before, &.collapsing::before
+        {
+            content: "\00a0 ";
+            display: inline-block;
+            height: 1px;
+            width: 100%;
+            background-color: lightgray;
+        }
+    }
+}
+*/
 
 .footer-separator
 {
