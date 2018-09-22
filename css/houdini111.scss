@@ -266,7 +266,6 @@ body
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
     appearance: none !important;
-
     border: 0;
     box-sizing: border-box;
     padding: 1em 2em;
@@ -275,12 +274,10 @@ body
     position: relative;
     vertical-align: middle;
     border-radius: 0;
-
     color: $lightAccent;
     @include transition(color $bootstrapTransitionTime);
 
-    &::before, &::after 
-    {
+    &::before, &::after {
         box-sizing: inherit;
         content: '';
         position: absolute;
@@ -291,46 +288,38 @@ body
         height: 0;
     }
 
-    &::before, &::after 
-    {
+    &::before, &::after {
         top: 0;
         left: 0;
     }
 
-    &[aria-expanded="false"] 
-    {
-        &:hover 
-        {
+    &[aria-expanded="false"] {
+        &:hover {
             color: $darkAccent;
 
-            &::before, &::after 
-            {
+            &::before, &::after {
                 width: 100%;
                 height: 100%;
             }
 
-            &::before 
-            {
+            &::before {
                 border-top-color: $darkAccent;
                 border-right-color: $darkAccent;
                 @include transition(width $bootstrapTransitionTime/2 ease-out, height $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
             }
 
-            &::after 
-            {
+            &::after {
                 border-bottom-color: $darkAccent;
                 border-left-color: $darkAccent;
                 @include transition(height $bootstrapTransitionTime/2 ease-out, width $bootstrapTransitionTime/2 ease-out $bootstrapTransitionTime/2);
             }
         }
     }
-    
-    &[aria-expanded="true"] 
-    {
+
+    &[aria-expanded="true"] {
         background-color: $lightAccent;
 
-        &::before, &::after 
-        {
+        &::before, &::after {
             border-color: $darkAccent;
             width: 100%;
             height: 100%;
@@ -339,17 +328,19 @@ body
     }
 }
 
+#Skills
+{
+    margin-right: 2em;
+}
 
 .expando-parent 
 {
-
     .expando-content .skill-bar 
     {
-        width: 100%;
+        width: 70%;
         height: 40px;
         padding: 4px;
         background: rgba(0, 0, 0, 0.25);
-        //background-color: lightgray;
         border-radius: 6px;
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08);
 
@@ -361,9 +352,21 @@ body
             background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
             background-color: purple;
             @include transition(width $bootstrapTransitionTime/2 ease-out, background-image $bootstrapTransitionTime/2 ease-out);
-            //transition: 4s linear;
-            //transition-property: width, background-color;
-            //box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.25), inset 0 1px rgba(255, 255, 255, 0.1);
         }
+    }
+}
+
+.skill 
+{
+    ~ .skill
+    {
+        margin-top: 1.5em;
+    }
+
+    h4, .bar
+    {
+        text-align: right;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 }

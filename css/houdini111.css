@@ -265,8 +265,11 @@ body {
       height: 100%;
       transition: none; }
 
+#Skills {
+  margin-right: 2em; }
+
 .expando-parent .expando-content .skill-bar {
-  width: 100%;
+  width: 70%;
   height: 40px;
   padding: 4px;
   background: rgba(0, 0, 0, 0.25);
@@ -283,5 +286,12 @@ body {
     -o-transition: width 0.175s ease-out, background-image 0.175s ease-out;
     -ms-transition: width 0.175s ease-out, background-image 0.175s ease-out;
     transition: width 0.175s ease-out, background-image 0.175s ease-out; }
+
+.skill ~ .skill {
+  margin-top: 1.5em; }
+.skill h4, .skill .bar {
+  text-align: right;
+  margin-top: auto;
+  margin-bottom: auto; }
 
 /*# sourceMappingURL=houdini111.css.map */
