@@ -208,7 +208,7 @@ body
         {
             &.show::before, &.collapsing::before
             {
-                content: "\00a0 ";
+                content: "\00a0";
                 display: inline-block;
                 height: 1px;
                 width: 100%;
@@ -217,23 +217,6 @@ body
         }
     }
 }
-
-/*
-.expando-parent
-{
-    &.show + .expando-parent, &.collapsing + .expando-content
-    {
-        &.show::before, &.collapsing::before
-        {
-            content: "\00a0 ";
-            display: inline-block;
-            height: 1px;
-            width: 100%;
-            background-color: lightgray;
-        }
-    }
-}
-*/
 
 .footer-separator
 {
@@ -354,5 +337,33 @@ body
             transition: none;
         }
     }
-    
+}
+
+
+.expando-parent 
+{
+
+    .expando-content .skill-bar 
+    {
+        width: 100%;
+        height: 40px;
+        padding: 4px;
+        background: rgba(0, 0, 0, 0.25);
+        //background-color: lightgray;
+        border-radius: 6px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08);
+
+        .bar 
+        {
+            width: 0%;
+            height: 100%;
+            border-radius: 4px;
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+            background-color: purple;
+            @include transition(width $bootstrapTransitionTime/2 ease-out, background-image $bootstrapTransitionTime/2 ease-out);
+            //transition: 4s linear;
+            //transition-property: width, background-color;
+            //box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.25), inset 0 1px rgba(255, 255, 255, 0.1);
+        }
+    }
 }

@@ -163,28 +163,12 @@ body {
   padding-top: 1em; }
 
 .expando-parent.show ~ .expando-parent.show::before, .expando-parent.show ~ .expando-parent.collapsing::before, .expando-parent.collapsing ~ .expando-parent.show::before, .expando-parent.collapsing ~ .expando-parent.collapsing::before {
-  content: "\00a0 ";
+  content: "\00a0";
   display: inline-block;
   height: 1px;
   width: 100%;
   background-color: lightgray; }
 
-/*
-.expando-parent
-{
-    &.show + .expando-parent, &.collapsing + .expando-content
-    {
-        &.show::before, &.collapsing::before
-        {
-            content: "\00a0 ";
-            display: inline-block;
-            height: 1px;
-            width: 100%;
-            background-color: lightgray;
-        }
-    }
-}
-*/
 .footer-separator {
   margin-left: 15%;
   margin-right: 15%; }
@@ -280,5 +264,24 @@ body {
       width: 100%;
       height: 100%;
       transition: none; }
+
+.expando-parent .expando-content .skill-bar {
+  width: 100%;
+  height: 40px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08); }
+  .expando-parent .expando-content .skill-bar .bar {
+    width: 0%;
+    height: 100%;
+    border-radius: 4px;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+    background-color: purple;
+    -webkit-transition: width 0.175s ease-out, background-image 0.175s ease-out;
+    -moz-transition: width 0.175s ease-out, background-image 0.175s ease-out;
+    -o-transition: width 0.175s ease-out, background-image 0.175s ease-out;
+    -ms-transition: width 0.175s ease-out, background-image 0.175s ease-out;
+    transition: width 0.175s ease-out, background-image 0.175s ease-out; }
 
 /*# sourceMappingURL=houdini111.css.map */

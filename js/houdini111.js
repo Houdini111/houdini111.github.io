@@ -2,6 +2,7 @@ function finalize()
 {
     PR.prettyPrint();
     noDrag();
+    progressBarsStyle();
 }
 
 function noDrag()
@@ -43,4 +44,20 @@ function removeBorder()
 function addBorder()
 {
     document.getElementById("sideColumn").style.borderLeftStyle = "solid";
+}
+
+function progressBarsStyle()
+{
+    var style = document.createElement("style");
+    style.type = "text/css";
+    var skillBars = document.getElementsByClassName("skill-bar");
+    for (var i = 0; i < skillBars.length; i++)
+    {
+        var sb = skillBars.item(i);
+        var b = sb.getElementsByClassName("bar").item(0);
+        sb.id = "skill_" + i;
+        style.innerHTML += " .show #" + sb.id + " .bar { width: " + b.innerHTML + "; }  \n";
+        b.innerHTML = "";
+    }
+    document.getElementsByTagName("head")[0].appendChild(style);
 }
