@@ -69,6 +69,12 @@ body {
   margin-bottom: .5em;
   border: 1px black solid; }
 
+#resumeLink {
+  padding-top: 1.5em;
+  font-weight: bold;
+  font-size: 1.6em;
+  text-decoration: underline; }
+
 .MainColumnExpandingButton {
   width: 100%;
   border-radius: .125em;
