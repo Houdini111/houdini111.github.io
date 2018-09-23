@@ -106,30 +106,72 @@
 
                             </p>
                             <p>
-                                <div class="text-center"><a id="resumeLink" target="_blank" href="assets/Public CS Resume.pdf">Download My Resume</a></div>
+                                <div class="text-center"><a class="resumeLink" target="_blank" href="assets/Public CS Resume.pdf">Download My Resume</a></div>
                                 <p class="text-center" >References available upon request</p>
                             </p>
                         </div>
                     </div>
                     <div class="collapse expando-parent" id="Projects">
                         <div class="expando-content">
-                            <pre class="prettyprint linenums lang-cpp">
-#define _USE_MATH_DEFINES  //Microsoft only
-#include <iostream>
-#include <cmath>
-using namespace std;
+                            <h3 class="text-center project-title">
+                                Tetris
+                            </h3>
+                            <p class="text-center">
+                                Among my personal project is Tetris. This version is developed entirely in Game Maker Studio 1.4 by me. <br />
+                                You can view the full source code at <a href="https://github.com/Houdini111/Tetris">the repository at my GitHub</a>. <br />
+                                Below is a code snippet from the piece's step event.
+                            </p>
+                            <pre class="prettyprint linenums lang-js project-code-snippet">
+if(global.active == id and !global.paused)
+{  
+    //HARD DROP
+    if(global.hardDrop and global.in_p[? gkeys.hd])
+    {
+        var yDiff = global.BLOCKS_TALL+4;
+        
+        for(var i = 0; i &lt; 4; i++) 
+        { 
+            var this_x = segments[i].x
+            for(var h = segments[i].y; h &lt; global.BLOCKS_TALL+4; h++)
+            {
+                var hit = global.segArr[this_x, h];
+                if(hit != noone and hit.parent != id)
+                {
+                    if(h - segments[i].y - 1 &lt; yDiff) { yDiff = h - segments[i].y - 1; }
+                    break;
+                }
+               
+            }
+            if(h &gt;= global.BLOCKS_TALL+4)
+            {
+                if(h - segments[i].y - 1 &lt; yDiff) { yDiff = global.BLOCKS_TALL+4 - segments[i].y - 1; }
+            }
+        }
+        for(i = 0; i &lt; 4; i++) { segments[i].y  += yDiff; }
+        
+        var snd = audio_play_sound(snd_harddrop, 10, false);
+        audio_sound_gain(snd, global.sfx_level/100, 0);
+        solidify(id);
+    }
 
-int main ()
-{
-	double V, S, r, h;
-	cout << "What is the radius and height? \n";
-	cin >> r >> h;
-	V = (1. / 3.) * M_PI * r * r * h;
-	S = (M_PI * r * r) + ((M_PI * r) * sqrt((r*r) + (h*h)));
-	cout << V << endl;
-	cout << S << endl;
+    if(sliderTimer &gt; -1) { sliderTimer -= delta_time/1000000; }
+    if(nonmovementTimer &gt; -1) { nonmovementTimer -= delta_time/1000000; }
+    if(rotationTimer &gt; -1) { rotationTimer -= delta_time/1000000; }
+    if(fallingTimer &gt; -1) { fallingTimer -= delta_time/1000000; }
+    
+    if(sliderTimer &lt;= 0 and sliderTimer != -1)  { event_user(1); }
+    if(nonmovementTimer &lt;= 0 and nonmovementTimer != -1)  { event_user(0);}
+    if(rotationTimer &lt;= 0 and rotationTimer != -1)  { event_user(2); }
+    if(fallingTimer &lt;= 0 and fallingTimer != -1)  { event_user(3); } 
 }
                             </pre>
+
+                            <h3 class="text-center project-title">
+                                My Personal Website
+                            </h3>
+                            <p class="text-center">
+                                You're looking at it! You can view the source code at my GitHub repo for the project <a href="https://github.com/Houdini111/houdini111.github.io">github.com/Houdini111/houdini111.github.io</a>
+                            </p>
                         </div>
                     </div>
                     <div class="collapse expando-parent" id="Awards">
@@ -247,8 +289,8 @@ int main ()
                     </div>
                     <div class="collapse expando-parent" id="ContactMe">
                         <div class="expando-content">
-                            <p><a href="mailto:xela.notnef@gmail.com" target="_top">Email: xela.notnef@gmail.com</a></p>
-                            <p>Cell: 385-333-6036</p>
+                            <p class="text-center"><a href="mailto:xela.notnef@gmail.com" target="_top">Email: xela.notnef@gmail.com</a></p>
+                            <p class="text-center"><a href="tel:+13853336036">Cell: 385-333-6036</a></p>
                         </div>
                     </div>
                 </div>
@@ -332,7 +374,7 @@ int main ()
                                 <i class="fab fa-github-square fa-4x"></i>
                             </a>
                         </p>
-                        
+
                     </div>
                     <div class="col-sm">
                         <p class="text-center">
@@ -341,6 +383,11 @@ int main ()
                             </a>
                         </p>
                     </div>
+                </div>
+                <hr class="right-col-hr" />
+                <div class="row">
+                    <div class="text-center center-horizontal text-sm"><a class="resumeLink" target="_blank" href="assets/Public CS Resume.pdf">Download My Resume</a></div>
+                    <p class="text-center center-horizontal text-sm">References available upon request</p>
                 </div>
             </div>
             <div class="col-xs-0 col-lg-1 col-xl-2"></div>
