@@ -48,7 +48,7 @@ function addBorder()
 
 function progressBarsStyle()
 {
-    var tmp = generateColor('#77A3C3', '#1E2542', 100);
+    var tmp = generateColor('#78e7ed', '#1E2542', 100);
 
     var style = document.createElement("style");
     style.type = "text/css";
