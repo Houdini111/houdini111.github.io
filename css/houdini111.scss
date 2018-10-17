@@ -21,6 +21,19 @@ $bootstrapTransitionTime: 0.35s;
     src: url();
 }
 
+@-webkit-keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@-moz-keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .prettyprint ol.linenums > li { list-style-type: decimal; }
 
 .text-center 
@@ -48,6 +61,22 @@ body
 {
     font-family: 'Montserrat', sans-serif;
     background-color: $lightShade;
+
+    $ani: fadeIn ease-in 1;
+    opacity:0;
+    -webkit-animation: $ani;
+    -moz-animation: $ani;
+    animation: $ani;
+
+    $dir: forwards;
+    -webkit-animation-fill-mode: $dir;
+    -moz-animation-fill-mode: $dir;
+    animation-fill-mode: $dir;
+
+    $time: 0.5s;
+    -webkit-animation-duration: $time;
+    -moz-animation-duration: $time;
+    animation-duration: $time;
 }
 
 #title
@@ -64,14 +93,14 @@ body
     border-left: 1px solid black;
 }
 
-#signature
+.sideColumnImg
 {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
 
-#signatureSizer 
+.sideColumnImgSizer 
 {
     margin: 1em;
     padding: 1em;
@@ -79,6 +108,12 @@ body
     max-width: 450px;
     margin-left: auto;
     margin-right: auto;
+}
+
+#personalPic
+{
+    border: 1px solid rgb(95, 95, 95);
+    box-shadow: 3px 3px 5px rgb(95, 95, 95);
 }
 
 .right-col-hr
