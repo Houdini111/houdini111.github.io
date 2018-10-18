@@ -47,6 +47,12 @@ $bootstrapTransitionTime: 0.35s;
     margin-right: auto;
 }
 
+.center-vertical
+{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .no-margin 
 {
     margin: 0;
@@ -140,6 +146,11 @@ body
     {
         margin: 1em;
     }
+}
+
+.projectDivider
+{
+    line-height: 3em;
 }
 
 .resizable 
@@ -279,11 +290,6 @@ body
     margin-right: 15%;
 }
 
-.centerText
-{
-    text-align: center;
-}
-
 .centerUnderlined
 {
     text-decoration: none;
@@ -323,7 +329,7 @@ body
     appearance: none !important;
     border: 0;
     box-sizing: border-box;
-    padding: 1em 2em;
+    padding: 1em 1.5em;
     box-shadow: inset 0 0 0 2px $lightShade;
     font-weight: inherit;
     position: relative;
@@ -383,6 +389,14 @@ body
     }
 }
 
+.jobHistoryItem
+{
+    ~ .jobHistoryItem
+    {
+        margin-top: 3em;
+    }
+}
+
 .project-title
 {
     text-decoration: underline;
@@ -407,7 +421,6 @@ body
 {
     margin-right: 2em;
 }
-
 .expando-parent 
 {
     .expando-content .skill-bar 
@@ -433,6 +446,8 @@ body
 
 .skill 
 {
+    width: 100%;
+
     ~ .skill
     {
         margin-top: 1.5em;

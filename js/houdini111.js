@@ -1,14 +1,7 @@
 function finalize()
 {
     PR.prettyPrint();
-    noDrag();
     progressBarsStyle();
-}
-
-function noDrag()
-{
-    var elements = document.querySelectorAll('noDrag');
-    for (i = 0; i < elements.length; i++){ elements[i].draggable = false; }
 }
 
 
