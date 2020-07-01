@@ -1,2 +1,4 @@
 css/watch_folder_scss.bat
 css/.sass-cache/
+obj/*
+.vs/*
