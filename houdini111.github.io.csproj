@@ -33,6 +33,6 @@
 		<TasksTargetsImported>true</TasksTargetsImported>
 	</PropertyGroup>
 
-	<Import Project="Tasks.targets" Condition=" '$(TasksTargetsImported)' == '' "/>
+	<Import Project="Tasks.targets" Condition=" '$(TasksTargetsImported)' == '' " />
 
 </Project>

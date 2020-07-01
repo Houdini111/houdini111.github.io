@@ -1,9 +1,21 @@
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Alexander Thomas Fenton's Personal Website" />
+        <meta name="author" content="Alexander Thomas Fenton" />
 
+        <title>Tetris Incremental</title>
+
+        <script src="tetris_incremental.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/tetris_incremental.css" /> 
     </head>
     <body>
-        <script src="tetris_incremental.js"></script>
-        A BODY!
+        <div id="game_container">
+            <div id="board_container">
+                <canvas id="board_grid" />
+                <canvas id="board" />
+            </div>
+        </div>
     </body>
 </html>
