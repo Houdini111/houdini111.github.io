@@ -15,13 +15,17 @@ var BOARD_WIDTH = 10;
 var BOARD_HEIGHT = 20;
 var RENDER_SCALE = 35;
 var GRID_LINE_WIDTH = 2;
+var DEBUG_MODE = false;
 var grid_ctx;
 var board_ctx;
+var debug_text;
 var start_time;
-var last_render_time;
+var last_update_time;
 var current_piece;
 var delta_time;
 var piece_random;
+var IG;
+var gravity_speed = 1 / 64; //64 ticks per block
 var Segment = /** @class */ (function () {
     function Segment(x, y) {
         this.x = x;
@@ -267,16 +271,30 @@ var RandomBag = /** @class */ (function (_super) {
     };
     return RandomBag;
 }(RandomPieces));
-function render_dynamic_board() {
+function update() {
     var now = Date.now();
-    delta_time = now - last_render_time;
-    last_render_time = now;
-    //let out: string = "RENDER. dt: " + delta_time;
+    delta_time = now - last_update_time;
+    last_update_time = now;
+    gravity();
+    render_dynamic_board();
+}
+function gravity() {
+    if (current_piece) {
+        IG += (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
+        if (IG > 0) {
+            current_piece.y += Math.floor(IG);
+            IG -= Math.floor(IG);
+        }
+        if (DEBUG_MODE) {
+            debug_text.innerText = "IG: " + IG;
+        }
+    }
+}
+function render_dynamic_board() {
     if (current_piece) {
         board_ctx.clearRect(0, 0, board_ctx.canvas.width, board_ctx.canvas.height);
         current_piece.render(board_ctx);
     }
-    //console.log(out);
 }
 function draw_grid() {
     if (GRID_LINE_WIDTH === 0) {
@@ -284,7 +302,6 @@ function draw_grid() {
     }
     grid_ctx.strokeStyle = "#000000";
     grid_ctx.lineWidth = GRID_LINE_WIDTH;
-    //grid_ctx.globalAlpha = 1;
     var w = grid_ctx.canvas.width;
     var h = grid_ctx.canvas.height;
     grid_ctx.clearRect(0, 0, grid_ctx.canvas.width, grid_ctx.canvas.height);
@@ -300,6 +317,8 @@ function draw_grid() {
 }
 function on_load() {
     piece_random = new RandomBag();
+    IG = 0;
+    debug_text = document.getElementById("debug_text");
     prepare_canvases();
     draw_grid();
     start_keypress_listener();
@@ -345,8 +364,8 @@ function start_keypress_listener() {
 }
 function start_render_thread() {
     start_time = Date.now();
-    last_render_time = start_time;
-    setInterval(render_dynamic_board, 16.66);
+    last_update_time = start_time;
+    setInterval(update, 16.66);
 }
 //Per https://stackoverflow.com/a/12646864/4698411
 function shuffleArray(array) {

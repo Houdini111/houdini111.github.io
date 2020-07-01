@@ -3,13 +3,20 @@ const BOARD_HEIGHT: number = 20;
 const RENDER_SCALE: number = 35;
 const GRID_LINE_WIDTH: number = 2;
 
+const DEBUG_MODE: boolean = false;
+
 let grid_ctx: CanvasRenderingContext2D;
 let board_ctx: CanvasRenderingContext2D;
+let debug_text: HTMLDivElement;
+
 let start_time: number;
-let last_render_time: number;
+let last_update_time: number;
 let current_piece: Piece;
 let delta_time: number;
 let piece_random: RandomPieces;
+
+let IG: number;
+let gravity_speed: number = 1/64; //64 ticks per block
 
 class Segment {
     x: number;
@@ -281,26 +288,42 @@ class RandomBag extends RandomPieces {
 }
 
 
-function render_dynamic_board(): void {
+function update(): void {
     let now = Date.now();
-    delta_time = now - last_render_time;
-    last_render_time = now;
+    delta_time = now - last_update_time;
+    last_update_time = now;
 
-    //let out: string = "RENDER. dt: " + delta_time;
+    gravity();
 
+    render_dynamic_board();
+}
+
+function gravity(): void {
+    if (current_piece) {
+        IG += (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
+
+        if (IG > 0) {
+            current_piece.y += Math.floor(IG);
+            IG -= Math.floor(IG);
+        }
+
+        if (DEBUG_MODE) {
+            debug_text.innerText = "IG: " + IG;
+        }
+    }
+}
+
+function render_dynamic_board(): void {
     if (current_piece) {
         board_ctx.clearRect(0, 0, board_ctx.canvas.width, board_ctx.canvas.height);
         current_piece.render(board_ctx);
     }
-
-    //console.log(out);
 }
 
 function draw_grid(): void {
     if (GRID_LINE_WIDTH === 0) { return; }
     grid_ctx.strokeStyle = "#000000";
     grid_ctx.lineWidth = GRID_LINE_WIDTH;
-    //grid_ctx.globalAlpha = 1;
 
     let w: number = grid_ctx.canvas.width;
     let h: number = grid_ctx.canvas.height;
@@ -320,6 +343,8 @@ function draw_grid(): void {
 
 function on_load(): void {
     piece_random = new RandomBag();
+    IG = 0;
+    debug_text = <HTMLDivElement>document.getElementById("debug_text");
 
     prepare_canvases();
 
@@ -376,8 +401,8 @@ function start_keypress_listener() :void {
 
 function start_render_thread(): void {
     start_time = Date.now();
-    last_render_time = start_time;
-    setInterval(render_dynamic_board, 16.66);
+    last_update_time = start_time;
+    setInterval(update, 16.66);
 }
 
 //Per https://stackoverflow.com/a/12646864/4698411
