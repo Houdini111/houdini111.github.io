@@ -1,12 +1,4 @@
-#game_container {
-  width: 100%;
-  height: auto; }
-
-#board_container {
-  position: relative;
-  height: auto; }
-
-.game_canvas, #board_grid, #board {
+.game_canvas, #board_grid, #board, #board_background {
   position: absolute;
   top: 0;
   left: 50%;
@@ -25,5 +17,16 @@
   /* Awesome future-browsers       */
   -ms-interpolation-mode: nearest-neighbor;
   /* IE    */ }
+
+#game_container {
+  width: 100%;
+  height: auto; }
+
+#board_container {
+  position: relative;
+  height: auto; }
+
+#board_background {
+  background-color: lightgray; }
 
 /*# sourceMappingURL=tetris_incremental.css.map */

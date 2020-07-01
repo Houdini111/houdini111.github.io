@@ -1,4 +1,22 @@
-﻿#game_container {
+﻿.game_canvas {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    background-color: transparent;
+}
+
+.nearest_neighbor_canvas {
+    //Per https://stackoverflow.com/a/7665647/4698411
+    image-rendering: optimizeSpeed; /* Older versions of FF          */
+    image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
+    image-rendering: -webkit-optimize-contrast; /* Safari                        */
+    image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
+    image-rendering: pixelated; /* Awesome future-browsers       */
+    -ms-interpolation-mode: nearest-neighbor; /* IE    */
+}
+
+
+#game_container {
     width: 100%;
     height: auto;
 }
@@ -19,19 +37,7 @@
     @extend .game_canvas;
 }
 
-.game_canvas {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    background-color: transparent;
-}
-
-.nearest_neighbor_canvas {
-    //Per https://stackoverflow.com/a/7665647/4698411
-    image-rendering: optimizeSpeed; /* Older versions of FF          */
-    image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
-    image-rendering: -webkit-optimize-contrast; /* Safari                        */
-    image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
-    image-rendering: pixelated; /* Awesome future-browsers       */
-    -ms-interpolation-mode: nearest-neighbor; /* IE    */
+#board_background {
+    @extend .game_canvas;
+    background-color: lightgray;
 }

@@ -14,18 +14,131 @@ var __extends = (this && this.__extends) || (function () {
 var BOARD_WIDTH = 10;
 var BOARD_HEIGHT = 20;
 var RENDER_SCALE = 35;
-var GRID_LINE_WIDTH = 2;
-var DEBUG_MODE = false;
+var GRID_LINE_WIDTH = 1;
+var DEBUG_MODE = true;
+//Page objects
 var grid_ctx;
 var board_ctx;
+var board_background;
 var debug_text;
+//Play values
+var controller;
+var controller_map;
 var start_time;
 var last_update_time;
 var current_piece;
 var delta_time;
 var piece_random;
 var IG;
-var gravity_speed = 1 / 64; //64 ticks per block
+var gravity_speed = 1 / 64; //64 ticks per block, not a const since it could increase
+//Control values
+var Controller = /** @class */ (function () {
+    function Controller() {
+        this.left_down = false;
+        this.left_hold = false;
+        this.left_up = false;
+        this.right_down = false;
+        this.right_hold = false;
+        this.right_up = false;
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+        this.hold = false;
+        this.soft_drop = false;
+        this.hard_drop = false;
+    }
+    Controller.prototype.press = function (name) {
+        switch (name) {
+            case "left":
+                if (!this.left_hold) {
+                    this.left_down = true;
+                }
+                this.left_hold = true;
+                this.left_up = false;
+                return;
+            case "right":
+                if (!this.right_hold) {
+                    this.right_down = true;
+                }
+                this.right_hold = true;
+                this.right_up = false;
+                return;
+            case "rotate_cw":
+                this.rotate_cw = true;
+                return;
+            case "rotate_ccw":
+                this.rotate_ccw = true;
+                return;
+            case "hold":
+                this.hold = true;
+                return;
+            case "soft_drop":
+                this.soft_drop = true;
+                return;
+            case "hard_drop":
+                this.hard_drop = true;
+                return;
+        }
+    };
+    Controller.prototype.release = function (name) {
+        switch (name) {
+            case "left":
+                this.left_down = false;
+                this.left_hold = false;
+                this.left_up = true;
+                return;
+            case "right":
+                this.right_down = false;
+                this.right_hold = false;
+                this.right_up = true;
+                return;
+        }
+    };
+    Controller.prototype.update = function () {
+        //Reset temporary (up/down) and non-hold inputs
+        this.left_down = false;
+        this.left_up = false;
+        this.right_down = false;
+        this.right_up = false;
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+        this.hold = false;
+        this.soft_drop = false;
+        this.hard_drop = false;
+    };
+    return Controller;
+}());
+var ControllerMap = /** @class */ (function () {
+    function ControllerMap() {
+        this.left = 37; //L Arrow
+        this.right = 39; //R Arrow
+        this.rotate_cw = 88; //X
+        this.rotate_ccw = -1; //Z
+        this.hold = -2; //Shift (like control) is a special case, so I'm storing it as a negative
+        this.soft_drop = 40; //D Arrow
+        this.hard_drop = 32; //Space
+    }
+    ControllerMap.prototype.get_name_from_code = function (code) {
+        switch (code) {
+            case this.left:
+                return "left";
+            case this.right:
+                return "right";
+            case this.rotate_cw:
+                return "rotate_cw";
+            case this.rotate_ccw:
+                return "rotate_ccw";
+            case this.hold:
+                return "hold";
+            case this.soft_drop:
+                return "soft_drop";
+            case this.hard_drop:
+                return "hard_drop";
+        }
+        return null;
+    };
+    return ControllerMap;
+}());
+//Game objects
 var Segment = /** @class */ (function () {
     function Segment(x, y) {
         this.x = x;
@@ -35,10 +148,9 @@ var Segment = /** @class */ (function () {
 }());
 var Piece = /** @class */ (function () {
     function Piece(x, y) {
-        this.x = 0;
-        this.y = 0;
         this.x = x;
         this.y = y;
+        this.rotation = 0;
         this.segments = new Array();
         for (var i = 0; i < 4; i++) {
             this.segments.push(new Segment(0, 0));
@@ -174,6 +286,7 @@ var L_Piece = /** @class */ (function (_super) {
     }
     return L_Piece;
 }(Piece));
+//Logic objects
 var RandomPieces = /** @class */ (function () {
     function RandomPieces() {
     }
@@ -275,18 +388,64 @@ function update() {
     var now = Date.now();
     delta_time = now - last_update_time;
     last_update_time = now;
-    gravity();
+    if (DEBUG_MODE) {
+        debug_text.innerText = "";
+    }
+    if (current_piece) {
+        slide();
+        rotate();
+        gravity();
+    }
+    if (DEBUG_MODE) {
+        debug_text.innerText += "current_piece: " + JSON.stringify(current_piece, null, "\t") + "\r\n";
+    }
+    if (controller.hard_drop) {
+        current_piece = piece_random.pop();
+    }
+    update_controller();
     render_dynamic_board();
+}
+function slide() {
+    var translate = 0;
+    if (controller.left_down) {
+        translate--;
+    }
+    else if (controller.right_down) {
+        translate++;
+    }
+    if (translate !== 0) {
+        for (var _i = 0, _a = current_piece.segments; _i < _a.length; _i++) {
+            var segment = _a[_i];
+            if (segment.x + current_piece.x + translate < 0 || segment.x + current_piece.x + translate >= BOARD_WIDTH) {
+                console.log(segment.x);
+                translate = 0;
+                break;
+            }
+        }
+        current_piece.x += translate;
+    }
+}
+function rotate() {
 }
 function gravity() {
     if (current_piece) {
         IG += (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
-        if (IG > 0) {
-            current_piece.y += Math.floor(IG);
-            IG -= Math.floor(IG);
+        var to_move = Math.floor(IG);
+        if (to_move) {
+            for (var _i = 0, _a = current_piece.segments; _i < _a.length; _i++) {
+                var segment = _a[_i];
+                if (segment.y + current_piece.y + to_move >= BOARD_HEIGHT) {
+                    to_move = 0;
+                    break;
+                }
+            }
+            if (to_move) {
+                current_piece.y += to_move;
+                IG -= to_move;
+            }
         }
         if (DEBUG_MODE) {
-            debug_text.innerText = "IG: " + IG;
+            debug_text.innerText += "IG: " + IG + "\r\n";
         }
     }
 }
@@ -318,10 +477,13 @@ function draw_grid() {
 function on_load() {
     piece_random = new RandomBag();
     IG = 0;
+    controller = new Controller();
+    controller_map = new ControllerMap();
     debug_text = document.getElementById("debug_text");
+    board_background = document.getElementById("board_background");
     prepare_canvases();
     draw_grid();
-    start_keypress_listener();
+    start_key_listener();
     start_render_thread();
 }
 function prepare_canvases() {
@@ -338,29 +500,61 @@ function prepare_canvases() {
         oldLineTo.call(this, x, y);
     };
     var odd_offset = GRID_LINE_WIDTH % 2 ? 1 : 0;
+    var w = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
+    var h = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
     var grid_obj = document.getElementById("board_grid");
     grid_ctx = grid_obj.getContext("2d");
-    grid_ctx.canvas.width = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
-    grid_ctx.canvas.height = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
-    if (odd_offset) {
-        grid_ctx.translate(0.5, 0.5); //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
-    }
+    grid_ctx.canvas.width = w;
+    grid_ctx.canvas.height = h;
     var board_obj = document.getElementById("board");
     board_ctx = board_obj.getContext("2d");
-    board_ctx.canvas.width = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
-    board_ctx.canvas.height = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
+    board_ctx.canvas.width = w;
+    board_ctx.canvas.height = h;
     if (odd_offset) {
+        grid_ctx.translate(0.5, 0.5); //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
         board_ctx.translate(0.5, 0.5);
     }
+    board_background.style.width = "" + w;
+    board_background.style.height = "" + h;
 }
-function start_keypress_listener() {
+function start_key_listener() {
     document.addEventListener("keydown", function (event) {
+        var code = event.keyCode;
         if (event.shiftKey) {
+            code = -2;
         }
-        else if (event.keyCode === 32) { //Space
-            current_piece = piece_random.pop();
-        }
+        update_controller(code, true);
     });
+    document.addEventListener("keyup", function (event) {
+        var code = event.keyCode;
+        if (event.shiftKey) {
+            code = -2;
+        }
+        update_controller(code, false);
+    });
+}
+function update_controller(keyCode, isDown) {
+    if (keyCode === void 0) { keyCode = null; }
+    if (isDown === void 0) { isDown = null; }
+    if (keyCode) {
+        var name_1 = controller_map.get_name_from_code(keyCode);
+        if (isDown) {
+            controller.press(name_1);
+        }
+        else if (isDown === false) {
+            controller.release(name_1);
+        }
+        else {
+            //TODO?
+        }
+    }
+    else {
+        controller.update();
+        if (DEBUG_MODE) {
+            var debug_str = "controller: " + JSON.stringify(controller, null, "\t") + "\r\n";
+            debug_text.innerText += debug_str;
+        }
+    }
 }
 function start_render_thread() {
     start_time = Date.now();

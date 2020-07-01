@@ -1,23 +1,166 @@
 const BOARD_WIDTH: number = 10;
 const BOARD_HEIGHT: number = 20; 
 const RENDER_SCALE: number = 35;
-const GRID_LINE_WIDTH: number = 2;
+const GRID_LINE_WIDTH: number = 1;
 
-const DEBUG_MODE: boolean = false;
+const DEBUG_MODE: boolean = true;
 
+//Page objects
 let grid_ctx: CanvasRenderingContext2D;
 let board_ctx: CanvasRenderingContext2D;
+let board_background: HTMLDivElement;
 let debug_text: HTMLDivElement;
 
+//Play values
+let controller: Controller;
+let controller_map: ControllerMap;
 let start_time: number;
 let last_update_time: number;
 let current_piece: Piece;
 let delta_time: number;
 let piece_random: RandomPieces;
-
 let IG: number;
-let gravity_speed: number = 1/64; //64 ticks per block
+let gravity_speed: number = 1 / 64; //64 ticks per block, not a const since it could increase
 
+
+//Control values
+class Controller {
+    left_down: boolean;
+    left_hold: boolean;
+    left_up: boolean;
+
+    right_down: boolean;
+    right_hold: boolean;
+    right_up: boolean;
+
+    rotate_cw: boolean;
+    rotate_ccw: boolean;
+
+    hold: boolean;
+
+    soft_drop: boolean;
+    hard_drop: boolean;
+
+    constructor() {
+        this.left_down = false;
+        this.left_hold = false;
+        this.left_up = false;
+
+        this.right_down = false;
+        this.right_hold = false;
+        this.right_up = false;
+
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+
+        this.hold = false;
+
+        this.soft_drop = false;
+        this.hard_drop = false;
+    }
+
+    press(name: string): void {
+        switch (name) {
+            case "left":
+                if (!this.left_hold) {
+                    this.left_down = true;
+                }
+                this.left_hold = true;
+                this.left_up = false;
+                return;
+            case "right":
+                if (!this.right_hold) {
+                    this.right_down = true;
+                }
+                this.right_hold = true;
+                this.right_up = false;
+                return;
+            case "rotate_cw":
+                this.rotate_cw = true;
+                return;
+            case "rotate_ccw":
+                this.rotate_ccw = true;
+                return;
+            case "hold":
+                this.hold = true;
+                return;
+            case "soft_drop":
+                this.soft_drop = true;
+                return;
+            case "hard_drop":
+                this.hard_drop = true;
+                return;
+        }
+    }
+
+    release(name: string): void {
+        switch (name) {
+            case "left":
+                this.left_down = false;
+                this.left_hold = false;
+                this.left_up = true;
+                return;
+            case "right":
+                this.right_down = false;
+                this.right_hold = false;
+                this.right_up = true;
+                return;
+        }
+    }
+
+    update(): void {
+        //Reset temporary (up/down) and non-hold inputs
+        this.left_down = false;
+        this.left_up = false;
+
+        this.right_down = false;
+        this.right_up = false;
+
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+
+        this.hold = false;
+
+        this.soft_drop = false;
+        this.hard_drop = false;
+    }
+}
+
+class ControllerMap {
+    left: number = 37; //L Arrow
+    right: number = 39; //R Arrow
+
+    rotate_cw: number = 88; //X
+    rotate_ccw: number = -1; //Z
+
+    hold: number = -2; //Shift (like control) is a special case, so I'm storing it as a negative
+
+    soft_drop: number = 40; //D Arrow
+    hard_drop: number = 32; //Space
+
+    get_name_from_code(code: number): string {
+        switch (code) {
+            case this.left:
+                return "left";
+            case this.right:
+                return "right";
+            case this.rotate_cw:
+                return "rotate_cw";
+            case this.rotate_ccw:
+                return "rotate_ccw";
+            case this.hold:
+                return "hold";
+            case this.soft_drop:
+                return "soft_drop";
+            case this.hard_drop:
+                return "hard_drop";
+        }
+        return null;
+    }
+}
+
+
+//Game objects
 class Segment {
     x: number;
     y: number;
@@ -29,14 +172,16 @@ class Segment {
 }
 
 class Piece {
-    x: number = 0;
-    y: number = 0;
+    x: number;
+    y: number;
     segments: Segment[];
     color: string;
+    rotation: number;
 
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+        this.rotation = 0;
         this.segments = new Array();
         for (let i: number = 0; i < 4; i++) {
             this.segments.push(new Segment(0, 0));
@@ -190,6 +335,7 @@ class L_Piece extends Piece {
 }
 
 
+//Logic objects
 class RandomPieces {
     peek(index: number): Piece {
         return null;
@@ -293,25 +439,77 @@ function update(): void {
     delta_time = now - last_update_time;
     last_update_time = now;
 
-    gravity();
+    if (DEBUG_MODE) {
+        debug_text.innerText = "";
+    }
+
+    if (current_piece) {
+        slide();
+        rotate();
+        gravity();
+    }
+
+    if (DEBUG_MODE) {
+        debug_text.innerText += "current_piece: " + JSON.stringify(current_piece, null, "\t") + "\r\n";
+    }
+    if (controller.hard_drop) {
+        current_piece = piece_random.pop();
+    }
+    update_controller();
 
     render_dynamic_board();
+}
+
+
+function slide(): void {
+    let translate: number = 0;
+    if (controller.left_down) {
+        translate--;
+    }
+    else if (controller.right_down) {
+        translate++;
+    }
+    if (translate !== 0) { 
+        for (let segment of current_piece.segments) {
+            if (segment.x + current_piece.x + translate < 0 || segment.x + current_piece.x + translate >= BOARD_WIDTH) {
+                console.log(segment.x);
+                translate = 0;
+                break;
+            }
+        }
+        current_piece.x += translate;
+    }
+}
+
+function rotate(): void {
+
 }
 
 function gravity(): void {
     if (current_piece) {
         IG += (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
 
-        if (IG > 0) {
-            current_piece.y += Math.floor(IG);
-            IG -= Math.floor(IG);
+        let to_move = Math.floor(IG);
+
+        if (to_move) {
+            for (let segment of current_piece.segments) {
+                if (segment.y + current_piece.y + to_move >= BOARD_HEIGHT) {
+                    to_move = 0;
+                    break;
+                }
+            }
+            if (to_move) {
+                current_piece.y += to_move;
+                IG -= to_move;
+            }
         }
 
         if (DEBUG_MODE) {
-            debug_text.innerText = "IG: " + IG;
+            debug_text.innerText += "IG: " + IG + "\r\n";
         }
     }
 }
+
 
 function render_dynamic_board(): void {
     if (current_piece) {
@@ -341,19 +539,25 @@ function draw_grid(): void {
     grid_ctx.stroke();
 }
 
+
 function on_load(): void {
     piece_random = new RandomBag();
     IG = 0;
+    controller = new Controller();
+    controller_map = new ControllerMap();
+
     debug_text = <HTMLDivElement>document.getElementById("debug_text");
+    board_background = <HTMLDivElement>document.getElementById("board_background");
 
     prepare_canvases();
 
     draw_grid();
 
-    start_keypress_listener();
+    start_key_listener();
     
     start_render_thread();
 }
+
 
 function prepare_canvases(): void {
     let oldMoveTo = CanvasRenderingContext2D.prototype.moveTo; //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
@@ -371,32 +575,65 @@ function prepare_canvases(): void {
 
     let odd_offset :number = GRID_LINE_WIDTH % 2 ? 1 : 0;
 
+    let w: number = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
+    let h: number = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
+
     let grid_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("board_grid");
     grid_ctx = grid_obj.getContext("2d");
-    grid_ctx.canvas.width = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
-    grid_ctx.canvas.height = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
-    if (odd_offset) {
-        grid_ctx.translate(0.5, 0.5); //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
-    }
+    grid_ctx.canvas.width = w;
+    grid_ctx.canvas.height = h;
 
     let board_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("board");
     board_ctx = board_obj.getContext("2d");
-    board_ctx.canvas.width = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
-    board_ctx.canvas.height = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
+    board_ctx.canvas.width = w;
+    board_ctx.canvas.height = h;
+
     if (odd_offset) {
+        grid_ctx.translate(0.5, 0.5); //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
         board_ctx.translate(0.5, 0.5);
     }
+
+    board_background.style.width = ""+w;
+    board_background.style.height = ""+h;
 }
 
-function start_keypress_listener() :void {
+function start_key_listener() :void {
     document.addEventListener("keydown", function (event) {
+        let code: number = event.keyCode;
         if (event.shiftKey) {
-
+            code = -2;
         }
-        else if (event.keyCode === 32) { //Space
-            current_piece = piece_random.pop();
-        }
+        update_controller(code, true);
     });
+    document.addEventListener("keyup", function (event) {
+        let code: number = event.keyCode;
+        if (event.shiftKey) {
+            code = -2;
+        }
+        update_controller(code, false);
+    });
+}
+
+function update_controller(keyCode: number = null, isDown: boolean = null): void {
+    if (keyCode) {
+        let name: string = controller_map.get_name_from_code(keyCode);
+        if (isDown) {
+            controller.press(name);
+        }
+        else if (isDown === false) {
+            controller.release(name);
+        }
+        else {
+            //TODO?
+        }
+    }
+    else {
+        controller.update();
+        if (DEBUG_MODE) {
+            let debug_str: string = "controller: " + JSON.stringify(controller, null, "\t") + "\r\n";
+            debug_text.innerText += debug_str;
+        }
+    }
 }
 
 function start_render_thread(): void {
@@ -404,6 +641,7 @@ function start_render_thread(): void {
     last_update_time = start_time;
     setInterval(update, 16.66);
 }
+
 
 //Per https://stackoverflow.com/a/12646864/4698411
 function shuffleArray(array: any[]) {
@@ -414,5 +652,6 @@ function shuffleArray(array: any[]) {
         array[j] = temp;
     }
 }
+
 
 window.onload = on_load;
