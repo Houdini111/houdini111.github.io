@@ -3,14 +3,13 @@
   height: auto; }
 
 #board_container {
-  text-align: center; }
+  position: relative;
+  height: auto; }
 
-#board_grid {
+.game_canvas, #board_grid, #board {
   position: absolute;
-  background-color: transparent; }
-
-#board {
-  position: absolute;
+  top: 0;
+  left: 50%;
   background-color: transparent; }
 
 .nearest_neighbor_canvas, #board_grid, #board {

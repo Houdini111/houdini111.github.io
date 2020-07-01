@@ -4,19 +4,25 @@
 }
 
 #board_container {
-    text-align: center;
+    position: relative;
+    height: auto;
 }
 
 
 #board_grid {
     @extend .nearest_neighbor_canvas;
-    position: absolute;
-    background-color: transparent;
+    @extend .game_canvas;
 }
 
 #board {
     @extend .nearest_neighbor_canvas;
+    @extend .game_canvas;
+}
+
+.game_canvas {
     position: absolute;
+    top: 0;
+    left: 50%;
     background-color: transparent;
 }
 
