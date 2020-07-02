@@ -27,17 +27,7 @@
 }
 
 
-#board_grid {
-    @extend .nearest_neighbor_canvas;
-    @extend .game_canvas;
-}
-
-#board {
-    @extend .nearest_neighbor_canvas;
-    @extend .game_canvas;
-}
 
 #board_background {
-    @extend .game_canvas;
     background-color: lightgray;
 }

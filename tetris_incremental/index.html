@@ -1,4 +1,4 @@
-<html>
+﻿<html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +14,10 @@
         <div id="game_container">
             <div id="board_container">
                 <pre id="debug_text"></pre>
-                <div id="board_background"></div>
-                <canvas id="board"></canvas>
-                <canvas id="board_grid"></canvas>
+                <div id="board_background" class="game_canvas"></div>
+                <canvas id="static_board" class="nearest_neighbor_canvas game_canvas"></canvas>
+                <canvas id="board" class="nearest_neighbor_canvas game_canvas"></canvas>
+                <canvas id="board_grid" class="nearest_neighbor_canvas game_canvas"></canvas>
             </div>
         </div>
     </body>

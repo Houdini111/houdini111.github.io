@@ -35,4 +35,12 @@
 
 	<Import Project="Tasks.targets" Condition=" '$(TasksTargetsImported)' == '' " />
 
+	<ItemGroup>
+	  <None Remove="tetris_incremental\tetris_incremental.ts" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <TypeScriptCompile Include="tetris_incremental\tetris_incremental.ts" />
+	</ItemGroup>
+
 </Project>

@@ -1,10 +1,10 @@
-.game_canvas, #board_grid, #board, #board_background {
+.game_canvas {
   position: absolute;
   top: 0;
   left: 50%;
   background-color: transparent; }
 
-.nearest_neighbor_canvas, #board_grid, #board {
+.nearest_neighbor_canvas {
   image-rendering: optimizeSpeed;
   /* Older versions of FF          */
   image-rendering: -moz-crisp-edges;
