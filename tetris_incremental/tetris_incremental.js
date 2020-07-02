@@ -9,6 +9,10 @@ let board_ctx;
 let static_board_ctx;
 let board_background;
 let debug_text;
+let debug_text_2;
+let debug_text_3;
+let board_dirty;
+let static_dirty;
 //Play values
 let board;
 let controller;
@@ -19,9 +23,19 @@ let static_pieces;
 let start_time;
 let last_update_time;
 let delta_time;
+let update_times = [];
+let UPDATES_TO_TRACK = 60;
 let IG;
 let gravity_speed = 1 / 64; //64 ticks per block, not a const since it could increase
 let soft_drop_multiplier = 6;
+let ARR = 0; //Auto Repeat Rate in ms
+//let ARR: number = 0; //Auto Repeat Rate in frames, can be fractional to indicate multiple moves per frame
+let DAS = 150; //Delayed Auto Shift in ms
+let ARR_countdown = -1;
+let DAS_countdown = -1;
+let repeat_right;
+let left_down_at;
+let right_down_at;
 //Control values
 class Controller {
     constructor() {
@@ -82,19 +96,10 @@ class Controller {
                 this.right_hold = false;
                 this.right_up = true;
                 return;
+            case "soft_drop":
+                this.soft_drop = false;
+                return;
         }
-    }
-    update() {
-        //Reset temporary (up/down) and non-hold inputs
-        this.left_down = false;
-        this.left_up = false;
-        this.right_down = false;
-        this.right_up = false;
-        this.rotate_cw = false;
-        this.rotate_ccw = false;
-        this.hold = false;
-        this.soft_drop = false;
-        this.hard_drop = false;
     }
 }
 class ControllerMap {
@@ -212,7 +217,7 @@ class Piece {
     rotate_to_270() {
     }
     make_ghost() {
-        this.ghost = new Piece(this.x, this.y);
+        this.ghost = new Ghost_Piece(this.x, this.y);
         this.ghost.color = this.color;
     }
     handle_ghost() {
@@ -230,6 +235,8 @@ class Piece {
         }
         this.ghost.y = y - 1;
     }
+}
+class Ghost_Piece extends Piece {
 }
 class O_Piece extends Piece {
     constructor() {
@@ -569,7 +576,7 @@ class TrueRandom extends RandomPieces {
     }
     pop() {
         this.ensure_available(0);
-        return this.random_queue.pop();
+        return this.random_queue.shift();
     }
     ensure_available(index) {
         while (this.random_queue.length - 1 < index) {
@@ -615,7 +622,7 @@ class RandomBag extends RandomPieces {
     }
     pop() {
         this.ensure_available(0);
-        return this.bag_queue.pop();
+        return this.bag_queue.shift();
     }
     ensure_available(index) {
         if (this.bag_queue.length - 1 < index) {
@@ -626,11 +633,22 @@ class RandomBag extends RandomPieces {
     }
 }
 function update() {
-    let now = Date.now();
+    let now = window.performance.now();
     delta_time = now - last_update_time;
     last_update_time = now;
     if (DEBUG_MODE) {
-        debug_text.innerText = "";
+        update_times.push(delta_time);
+        if (update_times.length > UPDATES_TO_TRACK) {
+            update_times.shift();
+        }
+        debug_text.innerText = "delta_time " + delta_time + "\r\n";
+        debug_text.innerText += "instantaneous_ups " + (1000 / delta_time) + "\r\n";
+        let total_time = 0;
+        for (let t of update_times) {
+            total_time += t;
+        }
+        debug_text.innerText += UPDATES_TO_TRACK + "_update_mspu " + (total_time / update_times.length) + "\r\n";
+        debug_text.innerText += UPDATES_TO_TRACK + "_update_ups " + (1000 / (total_time / update_times.length)) + "\r\n";
         let debug_str = "controller: " + stringify(controller, null, "\t") + "\r\n";
         debug_text.innerText += debug_str;
     }
@@ -643,30 +661,110 @@ function update() {
         debug_text.innerText += "current_piece: " + stringify(current_piece, null, "\t") + "\r\n";
         debug_text.innerText += "static pieces: " + static_pieces.length + "\r\n";
     }
-    update_controller();
-    render_dynamic_board();
+    if (DEBUG_MODE) {
+        let then = window.performance.now();
+        debug_text.innerText += "update took " + (then - now) + "\r\n";
+    }
 }
 function slide() {
     let translate = 0;
     if (controller.left_down) {
         translate--;
+        DAS_countdown = DAS;
+        repeat_right = false;
+        left_down_at = last_update_time;
     }
-    else if (controller.right_down) {
-        translate++;
-    }
-    if (translate !== 0) {
-        if (current_piece.canMove(board, current_piece.x + translate, current_piece.y)) {
-            current_piece.x += translate;
+    if (controller.left_hold) {
+        DAS_countdown -= delta_time;
+        if (DAS_countdown < 0) {
+            DAS_countdown = 0;
         }
     }
+    if (controller.left_up) {
+        DAS_countdown = -1;
+        ARR_countdown = -1;
+    }
+    if (controller.right_down) {
+        translate++;
+        DAS_countdown = DAS;
+        repeat_right = true;
+        right_down_at = last_update_time;
+    }
+    if (controller.right_hold) {
+        DAS_countdown -= delta_time;
+        if (DAS_countdown < 0) {
+            DAS_countdown = 0;
+        }
+    }
+    if (controller.right_up) {
+        controller.left_hold = false;
+        DAS_countdown = -1;
+        ARR_countdown = -1;
+    }
+    if (DAS_countdown === 0) {
+        if (ARR > 0) {
+            if (ARR_countdown === -1) {
+                ARR_countdown = ARR;
+            }
+            else {
+                ARR_countdown -= delta_time;
+                if (ARR_countdown < 0) {
+                    ARR_countdown = 0;
+                }
+                if (ARR_countdown === 0) {
+                    if (repeat_right) {
+                        translate++;
+                    }
+                    else {
+                        translate--;
+                    }
+                    ARR_countdown = ARR;
+                }
+            }
+        }
+        else {
+            if (repeat_right) {
+                translate = BOARD_WIDTH;
+            }
+            else {
+                translate = -BOARD_WIDTH;
+            }
+            ARR_countdown = 0;
+        }
+    }
+    if (DEBUG_MODE) {
+        debug_text.innerText += "DAS: " + DAS_countdown + "/" + DAS + "\r\n";
+        debug_text.innerText += "ARR: " + ARR_countdown + "/" + ARR + "\r\n";
+        debug_text.innerText += "repeat_right: " + repeat_right + "\r\n";
+        debug_text.innerText += "translate: " + translate + "\r\n";
+    }
+    if (translate !== 0) {
+        let x = current_piece.x;
+        for (; repeat_right ? x < current_piece.x + translate : x > current_piece.x + translate; repeat_right ? x++ : x--) {
+            if (!current_piece.canMove(board, repeat_right ? x + 1 : x - 1, current_piece.y)) {
+                break;
+            }
+        }
+        current_piece.x = x;
+        board_dirty = true;
+    }
     current_piece.handle_ghost();
+    //"Handled" inputs
+    controller.left_down = false;
+    controller.left_up = false;
+    controller.right_down = false;
+    controller.right_up = false;
 }
 function rotate() {
     if (controller.rotate_cw) {
         current_piece.rotate(true);
+        board_dirty = true;
+        controller.rotate_cw = false;
     }
     else if (controller.rotate_ccw) {
         current_piece.rotate(false);
+        board_dirty = true;
+        controller.rotate_ccw = false;
     }
 }
 function gravity() {
@@ -675,9 +773,11 @@ function gravity() {
             for (let y = current_piece.y; y < BOARD_HEIGHT; y++) {
                 if (!current_piece.canMove(board, current_piece.x, y)) {
                     current_piece.y = y - 1;
+                    board_dirty = true;
                     break;
                 }
             }
+            controller.hard_drop = false;
             solidify();
         }
         else {
@@ -692,6 +792,7 @@ function gravity() {
                 for (; y > current_piece.y; y--) {
                     if (current_piece.canMove(board, current_piece.x, y)) {
                         current_piece.y += to_move;
+                        board_dirty = true;
                         IG -= to_move;
                     }
                 }
@@ -703,6 +804,16 @@ function gravity() {
     }
     if (DEBUG_MODE) {
         debug_text.innerText += "IG: " + IG + "\r\n";
+    }
+}
+function render() {
+    if (board_dirty) {
+        render_dynamic_board();
+        board_dirty = false;
+    }
+    if (static_dirty) {
+        render_static_board();
+        static_dirty = false;
     }
 }
 function render_dynamic_board() {
@@ -742,6 +853,7 @@ function render_grid() {
 function new_piece() {
     current_piece = piece_random.pop();
     current_piece.handle_ghost();
+    board_dirty = true;
     IG = 0;
 }
 function solidify() {
@@ -783,9 +895,6 @@ function solidify() {
         let b = 0;
         let shift_amt = 1;
         for (let y = rows_to_clear[0] - 1; y >= 0; y--) {
-            if (rows_to_clear.some((row) => row === y)) {
-                shift_amt++;
-            }
             for (let x = 0; x < BOARD_WIDTH; x++) {
                 board[x][y + shift_amt] = board[x][y];
                 if (board[x][y]) {
@@ -793,15 +902,18 @@ function solidify() {
                     board[x][y] = null;
                 }
             }
+            if (rows_to_clear.some((row) => row === y)) {
+                shift_amt++;
+            }
             b++;
             if (b === 30) {
                 break;
             }
         }
-        render_static_board();
+        static_dirty = true;
     }
     else {
-        current_piece.render(static_board_ctx);
+        static_dirty = true;
     }
     new_piece();
 }
@@ -819,12 +931,17 @@ function on_load() {
     controller = new Controller();
     controller_map = new ControllerMap();
     debug_text = document.getElementById("debug_text");
+    debug_text_2 = document.getElementById("debug_text_2");
+    debug_text_3 = document.getElementById("debug_text_3");
     board_background = document.getElementById("board_background");
     prepare_canvases();
     render_grid();
     start_key_listener();
     new_piece();
-    start_update_thread();
+    start_time = window.performance.now();
+    last_update_time = start_time;
+    setInterval(update, 0); //0 usually becomes forced to a minimum of 10 by the browser
+    setInterval(render, 16);
 }
 function prepare_canvases() {
     let oldMoveTo = CanvasRenderingContext2D.prototype.moveTo; //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
@@ -869,6 +986,7 @@ function start_key_listener() {
             code = -2;
         }
         update_controller(code, true);
+        document.dispatchEvent(new Event('keypress', { "keyCode": event.keyCode }));
     });
     document.addEventListener("keyup", function (event) {
         let code = event.keyCode;
@@ -895,14 +1013,6 @@ function update_controller(keyCode = null, isDown = null) {
             //TODO?
         }
     }
-    else {
-        controller.update();
-    }
-}
-function start_update_thread() {
-    start_time = Date.now();
-    last_update_time = start_time;
-    setInterval(update, 16.66);
 }
 //Per https://stackoverflow.com/a/12646864/4698411
 function shuffleArray(array) {

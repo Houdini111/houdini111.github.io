@@ -6,13 +6,10 @@
 }
 
 .nearest_neighbor_canvas {
-    //Per https://stackoverflow.com/a/7665647/4698411
-    image-rendering: optimizeSpeed; /* Older versions of FF          */
-    image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
-    image-rendering: -webkit-optimize-contrast; /* Safari                        */
-    image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
-    image-rendering: pixelated; /* Awesome future-browsers       */
-    -ms-interpolation-mode: nearest-neighbor; /* IE    */
+    //Per https://css-tricks.com/keep-pixelated-images-pixelated-as-they-scale/
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
 }
 
 
@@ -29,5 +26,5 @@
 
 
 #board_background {
-    background-color: lightgray;
+    background-color: gray;
 }
