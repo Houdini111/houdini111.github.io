@@ -11,9 +11,12 @@ let piece_ctx: CanvasRenderingContext2D;
 let ghost_ctx: CanvasRenderingContext2D;
 let static_piece_ctx: CanvasRenderingContext2D;
 let board_background: HTMLDivElement;
+let board_container: HTMLDivElement;
 let debug_text: HTMLDivElement;
 let debug_text_2: HTMLDivElement;
 let debug_text_3: HTMLDivElement;
+let lines_stat: HTMLDivElement;
+let purchases: HTMLDivElement;
 
 let board_dirty: boolean;
 let static_dirty: boolean;
@@ -49,6 +52,37 @@ let LOCK_DELAY: number = 500; //Miliseconds before lock
 let lock_countdown: number = -1;
 
 let held_piece: Piece;
+
+let lines_cleared: number;
+let total_lines_cleared: number;
+
+let unpurchased_purchases: Purchase[];
+let visible_purchases: Purchase[];
+let purchased_purchases: Purchase[];
+
+//Purchases
+class Purchase {
+    name: string;
+    visible_at: number;
+    price: number;
+    buy_logic: () => void;
+
+    constructor(name: string, visible_at: number, price: number, buy_logic: () => void) {
+        this.name = name;
+        this.visible_at = visible_at;
+        this.price = price;
+        this.buy_logic = buy_logic;
+    }
+}
+
+//Purchase vars
+let o_piece: boolean;
+let s_piece: boolean;
+let z_piece: boolean;
+let l_piece: boolean;
+let j_piece: boolean;
+let t_piece: boolean;
+let i_piece: boolean;
 
 
 //Control values
@@ -147,6 +181,28 @@ class Controller {
                 this.soft_drop = false;
                 return;
         }
+    }
+
+    clear(): void {
+        this.left_down = false;
+        this.left_hold = false;
+        this.left_up = false;
+        this.left_down_start = 0;
+        this.left_down_time = 0;
+
+        this.right_down = false;
+        this.right_hold = false;
+        this.right_up = false;
+        this.right_down_start = 0;
+        this.right_down_time = 0;
+
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+
+        this.hold = false;
+
+        this.soft_drop = false;
+        this.hard_drop = false;
     }
 }
 
@@ -921,16 +977,12 @@ class L_Piece extends Piece {
 
 
 //Logic objects
-class RandomPieces {
-    peek(index: number): Piece {
-        return null;
-    }
+abstract class RandomPieces {
+    abstract peek(index: number): Piece;
 
-    pop(): Piece {
-        return null;
-    }
+    abstract pop(): Piece;
 
-    piece_array(): Piece[] {
+    all_pieces(): Piece[] {
         let arr:  Piece[] = [];
 
         arr.push(new O_Piece());
@@ -944,9 +996,23 @@ class RandomPieces {
         return arr;
     }
 
-    ensure_available(index: number): void {
+    available_pieces(): Piece[] {
+        let arr: Piece[] = [];
 
+        if (o_piece) { arr.push(new O_Piece()); }
+        if (s_piece) { arr.push(new S_Piece()); }
+        if (z_piece) { arr.push(new Z_Piece()); }
+        if (l_piece) { arr.push(new L_Piece()); }
+        if (j_piece) { arr.push(new J_Piece()); }
+        if (t_piece) { arr.push(new T_Piece()); }
+        if (i_piece) { arr.push(new I_Piece()); }
+
+        return arr;
     }
+
+    abstract ensure_available(index: number): void;
+
+    abstract clear(): void;
 }
 
 class TrueRandom extends RandomPieces {
@@ -964,35 +1030,17 @@ class TrueRandom extends RandomPieces {
 
     ensure_available(index: number): void {
         while (this.random_queue.length - 1 < index) {
-            let i: number = Math.floor(Math.random() * 7);
-            let new_piece: Piece = null;
-            switch (i) {
-                case 0:
-                    new_piece = new O_Piece();
-                    break;
-                case 1:
-                    new_piece = new I_Piece();
-                    break;
-                case 2:
-                    new_piece = new T_Piece();
-                    break;
-                case 3:
-                    new_piece = new S_Piece();
-                    break;
-                case 4:
-                    new_piece = new Z_Piece();
-                    break;
-                case 5:
-                    new_piece = new J_Piece();
-                    break;
-                case 6:
-                    new_piece = new L_Piece();
-                    break;
-            }
+            let pieces: Piece[] = this.available_pieces();
+            let i: number = Math.floor(Math.random() * pieces.length);
+            let new_piece: Piece = pieces[i];
             if (new_piece) {
                 this.random_queue.push(new_piece);
             }
         }
+    }
+
+    clear() {
+        this.random_queue = [];
     }
 }
 
@@ -1011,10 +1059,14 @@ class RandomBag extends RandomPieces {
 
     ensure_available(index: number): void {
         if (this.bag_queue.length - 1 < index) {
-            let pieces: Piece[] = this.piece_array();
+            let pieces: Piece[] = this.available_pieces();
             shuffleArray(pieces);
             this.bag_queue = this.bag_queue.concat(pieces);
         }
+    }
+
+    clear() {
+        this.bag_queue = [];
     }
 }
 
@@ -1269,6 +1321,7 @@ function new_piece(): void {
     lock_countdown = -1;
     current_piece.render(piece_ctx, false, true);
     current_piece.ghost.render(ghost_ctx, false, true);
+    check_alive();
 }
 
 function solidify(): void {
@@ -1309,7 +1362,6 @@ function solidify(): void {
                 board[x][y] = null;
             }
         }
-        let b: number = 0;
         let shift_amt: number = 1;
         for (let y: number = rows_to_clear[0] - 1; y >= 0; y--) {
             for (let x: number = 0; x < BOARD_WIDTH; x++) {
@@ -1322,11 +1374,9 @@ function solidify(): void {
             if (rows_to_clear.some((row) => row === y)) {
                 shift_amt++;
             }
-            b++;
-            if (b === 30) {
-                break;
-            }
         }
+        add_line(rows_to_clear.length);
+
         //TODO: Don't re-render the whole board, splice together the board
         static_dirty = true;
     }
@@ -1347,6 +1397,7 @@ function hold(): void {
             current_piece.reinit();
             current_piece.render(piece_ctx, false, true);
             current_piece.ghost.render(ghost_ctx, false, true);
+            check_alive();
         }
         else {
             held_piece = current_piece;
@@ -1356,8 +1407,24 @@ function hold(): void {
     }
 }
 
+function check_alive(): void {
+    if (!current_piece.can_move_to(board, this.x, this.y)) {
+        //Dead
+        reset();
+    }
+}
 
-function on_load(): void {
+
+function reset(): void {
+    piece_random.clear();
+    current_piece = null;
+    controller.clear();
+    new_board();
+    held_piece = null;
+    new_piece();
+}
+
+function new_board(): void {
     board = [];
     for (let x: number = 0; x < BOARD_WIDTH; x++) {
         board[x] = []
@@ -1366,18 +1433,38 @@ function on_load(): void {
         }
     }
     static_pieces = [];
+}
+
+
+function on_load(): void {
+    new_board();
     piece_random = new RandomBag();
     IG = 0;
     controller = new Controller();
     controller_map = new ControllerMap();
+    lines_cleared = 0;
+    total_lines_cleared = 0;
+    o_piece = true;
+    s_piece = false;
+    z_piece = false;
+    l_piece = false;
+    j_piece = false;
+    t_piece = false;
+    i_piece = false;
+
 
     debug_text = <HTMLDivElement>document.getElementById("debug_text");
     debug_text_2 = <HTMLDivElement>document.getElementById("debug_text_2");
     debug_text_3 = <HTMLDivElement>document.getElementById("debug_text_3");
     board_background = <HTMLDivElement>document.getElementById("board_background");
+    board_container = <HTMLDivElement>document.getElementById("board_container");
+    lines_stat = <HTMLDivElement>document.getElementById("lines_stat");
+    purchases = <HTMLDivElement>document.getElementById("purchases");
+
+    init_unlocks();
+    update_stats();
 
     prepare_canvases();
-
     render_grid();
 
     start_key_listener();
@@ -1388,7 +1475,7 @@ function on_load(): void {
     last_update_time = start_time;
     setInterval(fixed_update, 0); //0 usually becomes forced to a minimum of 10 by the browser
 
-    window.onscroll = function () { window.scrollTo(0, 0);}
+    //window.onscroll = function () { window.scrollTo(0, 0);}
 }
 
 
@@ -1405,8 +1492,6 @@ function prepare_canvases(): void {
         y |= 0;
         oldLineTo.call(this, x, y);
     }
-
-    let odd_offset :number = GRID_LINE_WIDTH % 2 ? 1 : 0;
 
     let w: number = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
     let h: number = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
@@ -1432,7 +1517,7 @@ function prepare_canvases(): void {
     static_piece_ctx.canvas.width = w;
     static_piece_ctx.canvas.height = h;
 
-    if (odd_offset) {
+    if (GRID_LINE_WIDTH % 2) {
         //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
         grid_ctx.translate(0.5, 0.5); 
         piece_ctx.translate(0.5, 0.5);
@@ -1442,9 +1527,13 @@ function prepare_canvases(): void {
 
     board_background.style.width = ""+w;
     board_background.style.height = ""+h;
+
+    board_container.style.width = ""+w;
+    board_container.style.height = ""+h;
+    board_container.style.flexBasis = ""+w;
 }
 
-function start_key_listener() :void {
+function start_key_listener(): void {
     document.addEventListener("keydown", function (event) {
         let code: number = event.keyCode;
         if (event.shiftKey) {
@@ -1485,6 +1574,53 @@ function update_controller(keyCode: number = null, isDown: boolean = null): void
             //TODO?
         }
     }
+}
+
+
+function add_line(number: number = 1) {
+    lines_cleared += number;
+    total_lines_cleared += number;
+    update_stats();
+    update_unlocks();
+}
+
+function init_unlocks(): void {
+    unpurchased_purchases = [];
+    purchased_purchases = [];
+    visible_purchases = [];
+
+    unpurchased_purchases.push(new Purchase("Unlock S/Z", 5, 10, () => { s_piece = true; z_piece = true; }));
+}
+
+function update_stats(): void {
+    lines_stat.innerText = "" + lines_cleared;
+}
+
+function update_unlocks(): void {
+    for (let p of unpurchased_purchases) {
+        if (p.visible_at <= total_lines_cleared) {
+            if (!visible_purchases.some((p1) => p1 === p)) {
+                add_unlock(p);
+            }
+        }
+    }
+}
+
+function add_unlock(purchase: Purchase) {
+    let btn: HTMLButtonElement = document.createElement("button");
+    purchases.appendChild(btn);
+    btn.innerText = purchase.name + ": " + purchase.price;
+    btn.addEventListener("click", (e) => {
+        if (lines_cleared >= purchase.price) {
+            lines_cleared -= purchase.price;
+            purchase.buy_logic();
+            btn.remove();
+            unpurchased_purchases.splice(unpurchased_purchases.indexOf(purchase), 1);
+            visible_purchases.splice(visible_purchases.indexOf(purchase), 1);
+            purchased_purchases.push(purchase);
+        }
+    });
+    visible_purchases.push(purchase);
 }
 
 

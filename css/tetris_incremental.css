@@ -10,14 +10,16 @@
   image-rendering: -moz-crisp-edges; }
 
 #game_container {
+  display: flex;
   width: 100%;
   height: auto; }
 
 #board_container {
-  position: relative;
-  width: 0;
-  height: 1px;
-  margin: auto; }
+  position: relative; }
+
+#stats {
+  flex: 1;
+  margin-left: 5px; }
 
 #board_background {
   background-color: gray; }

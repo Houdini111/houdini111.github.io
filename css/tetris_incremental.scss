@@ -14,15 +14,18 @@
 
 
 #game_container {
+    display: flex;
     width: 100%;
     height: auto;
 }
 
 #board_container {
     position: relative;
-    width: 0;
-    height: 1px;
-    margin: auto;
+}
+
+#stats {
+    flex: 1;
+    margin-left: 5px;
 }
 
 

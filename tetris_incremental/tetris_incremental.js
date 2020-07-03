@@ -9,9 +9,12 @@ let piece_ctx;
 let ghost_ctx;
 let static_piece_ctx;
 let board_background;
+let board_container;
 let debug_text;
 let debug_text_2;
 let debug_text_3;
+let lines_stat;
+let purchases;
 let board_dirty;
 let static_dirty;
 //Play values
@@ -39,6 +42,28 @@ let previous_held_for;
 let LOCK_DELAY = 500; //Miliseconds before lock
 let lock_countdown = -1;
 let held_piece;
+let lines_cleared;
+let total_lines_cleared;
+let unpurchased_purchases;
+let visible_purchases;
+let purchased_purchases;
+//Purchases
+class Purchase {
+    constructor(name, visible_at, price, buy_logic) {
+        this.name = name;
+        this.visible_at = visible_at;
+        this.price = price;
+        this.buy_logic = buy_logic;
+    }
+}
+//Purchase vars
+let o_piece;
+let s_piece;
+let z_piece;
+let l_piece;
+let j_piece;
+let t_piece;
+let i_piece;
 //Control values
 class Controller {
     constructor() {
@@ -109,6 +134,23 @@ class Controller {
                 this.soft_drop = false;
                 return;
         }
+    }
+    clear() {
+        this.left_down = false;
+        this.left_hold = false;
+        this.left_up = false;
+        this.left_down_start = 0;
+        this.left_down_time = 0;
+        this.right_down = false;
+        this.right_hold = false;
+        this.right_up = false;
+        this.right_down_start = 0;
+        this.right_down_time = 0;
+        this.rotate_cw = false;
+        this.rotate_ccw = false;
+        this.hold = false;
+        this.soft_drop = false;
+        this.hard_drop = false;
     }
 }
 class ControllerMap {
@@ -706,13 +748,7 @@ class L_Piece extends Piece {
 }
 //Logic objects
 class RandomPieces {
-    peek(index) {
-        return null;
-    }
-    pop() {
-        return null;
-    }
-    piece_array() {
+    all_pieces() {
         let arr = [];
         arr.push(new O_Piece());
         arr.push(new I_Piece());
@@ -723,7 +759,30 @@ class RandomPieces {
         arr.push(new L_Piece());
         return arr;
     }
-    ensure_available(index) {
+    available_pieces() {
+        let arr = [];
+        if (o_piece) {
+            arr.push(new O_Piece());
+        }
+        if (s_piece) {
+            arr.push(new S_Piece());
+        }
+        if (z_piece) {
+            arr.push(new Z_Piece());
+        }
+        if (l_piece) {
+            arr.push(new L_Piece());
+        }
+        if (j_piece) {
+            arr.push(new J_Piece());
+        }
+        if (t_piece) {
+            arr.push(new T_Piece());
+        }
+        if (i_piece) {
+            arr.push(new I_Piece());
+        }
+        return arr;
     }
 }
 class TrueRandom extends RandomPieces {
@@ -741,35 +800,16 @@ class TrueRandom extends RandomPieces {
     }
     ensure_available(index) {
         while (this.random_queue.length - 1 < index) {
-            let i = Math.floor(Math.random() * 7);
-            let new_piece = null;
-            switch (i) {
-                case 0:
-                    new_piece = new O_Piece();
-                    break;
-                case 1:
-                    new_piece = new I_Piece();
-                    break;
-                case 2:
-                    new_piece = new T_Piece();
-                    break;
-                case 3:
-                    new_piece = new S_Piece();
-                    break;
-                case 4:
-                    new_piece = new Z_Piece();
-                    break;
-                case 5:
-                    new_piece = new J_Piece();
-                    break;
-                case 6:
-                    new_piece = new L_Piece();
-                    break;
-            }
+            let pieces = this.available_pieces();
+            let i = Math.floor(Math.random() * pieces.length);
+            let new_piece = pieces[i];
             if (new_piece) {
                 this.random_queue.push(new_piece);
             }
         }
+    }
+    clear() {
+        this.random_queue = [];
     }
 }
 class RandomBag extends RandomPieces {
@@ -787,10 +827,13 @@ class RandomBag extends RandomPieces {
     }
     ensure_available(index) {
         if (this.bag_queue.length - 1 < index) {
-            let pieces = this.piece_array();
+            let pieces = this.available_pieces();
             shuffleArray(pieces);
             this.bag_queue = this.bag_queue.concat(pieces);
         }
+    }
+    clear() {
+        this.bag_queue = [];
     }
 }
 function fixed_update() {
@@ -1016,6 +1059,7 @@ function new_piece() {
     lock_countdown = -1;
     current_piece.render(piece_ctx, false, true);
     current_piece.ghost.render(ghost_ctx, false, true);
+    check_alive();
 }
 function solidify() {
     static_pieces.push(current_piece);
@@ -1053,7 +1097,6 @@ function solidify() {
                 board[x][y] = null;
             }
         }
-        let b = 0;
         let shift_amt = 1;
         for (let y = rows_to_clear[0] - 1; y >= 0; y--) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
@@ -1066,11 +1109,8 @@ function solidify() {
             if (rows_to_clear.some((row) => row === y)) {
                 shift_amt++;
             }
-            b++;
-            if (b === 30) {
-                break;
-            }
         }
+        add_line(rows_to_clear.length);
         //TODO: Don't re-render the whole board, splice together the board
         static_dirty = true;
     }
@@ -1089,6 +1129,7 @@ function hold() {
             current_piece.reinit();
             current_piece.render(piece_ctx, false, true);
             current_piece.ghost.render(ghost_ctx, false, true);
+            check_alive();
         }
         else {
             held_piece = current_piece;
@@ -1097,7 +1138,21 @@ function hold() {
         controller.hold = false;
     }
 }
-function on_load() {
+function check_alive() {
+    if (!current_piece.can_move_to(board, this.x, this.y)) {
+        //Dead
+        reset();
+    }
+}
+function reset() {
+    piece_random.clear();
+    current_piece = null;
+    controller.clear();
+    new_board();
+    held_piece = null;
+    new_piece();
+}
+function new_board() {
     board = [];
     for (let x = 0; x < BOARD_WIDTH; x++) {
         board[x] = [];
@@ -1106,14 +1161,31 @@ function on_load() {
         }
     }
     static_pieces = [];
+}
+function on_load() {
+    new_board();
     piece_random = new RandomBag();
     IG = 0;
     controller = new Controller();
     controller_map = new ControllerMap();
+    lines_cleared = 0;
+    total_lines_cleared = 0;
+    o_piece = true;
+    s_piece = false;
+    z_piece = false;
+    l_piece = false;
+    j_piece = false;
+    t_piece = false;
+    i_piece = false;
     debug_text = document.getElementById("debug_text");
     debug_text_2 = document.getElementById("debug_text_2");
     debug_text_3 = document.getElementById("debug_text_3");
     board_background = document.getElementById("board_background");
+    board_container = document.getElementById("board_container");
+    lines_stat = document.getElementById("lines_stat");
+    purchases = document.getElementById("purchases");
+    init_unlocks();
+    update_stats();
     prepare_canvases();
     render_grid();
     start_key_listener();
@@ -1121,7 +1193,7 @@ function on_load() {
     start_time = window.performance.now();
     last_update_time = start_time;
     setInterval(fixed_update, 0); //0 usually becomes forced to a minimum of 10 by the browser
-    window.onscroll = function () { window.scrollTo(0, 0); };
+    //window.onscroll = function () { window.scrollTo(0, 0);}
 }
 function prepare_canvases() {
     let oldMoveTo = CanvasRenderingContext2D.prototype.moveTo; //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
@@ -1136,7 +1208,6 @@ function prepare_canvases() {
         y |= 0;
         oldLineTo.call(this, x, y);
     };
-    let odd_offset = GRID_LINE_WIDTH % 2 ? 1 : 0;
     let w = (BOARD_WIDTH * RENDER_SCALE) + GRID_LINE_WIDTH;
     let h = (BOARD_HEIGHT * RENDER_SCALE) + GRID_LINE_WIDTH;
     let grid_obj = document.getElementById("board_grid");
@@ -1156,7 +1227,7 @@ function prepare_canvases() {
     static_piece_ctx = static_board_obj.getContext("2d");
     static_piece_ctx.canvas.width = w;
     static_piece_ctx.canvas.height = h;
-    if (odd_offset) {
+    if (GRID_LINE_WIDTH % 2) {
         //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
         grid_ctx.translate(0.5, 0.5);
         piece_ctx.translate(0.5, 0.5);
@@ -1165,6 +1236,9 @@ function prepare_canvases() {
     }
     board_background.style.width = "" + w;
     board_background.style.height = "" + h;
+    board_container.style.width = "" + w;
+    board_container.style.height = "" + h;
+    board_container.style.flexBasis = "" + w;
 }
 function start_key_listener() {
     document.addEventListener("keydown", function (event) {
@@ -1204,6 +1278,46 @@ function update_controller(keyCode = null, isDown = null) {
             //TODO?
         }
     }
+}
+function add_line(number = 1) {
+    lines_cleared += number;
+    total_lines_cleared += number;
+    update_stats();
+    update_unlocks();
+}
+function init_unlocks() {
+    unpurchased_purchases = [];
+    purchased_purchases = [];
+    visible_purchases = [];
+    unpurchased_purchases.push(new Purchase("Unlock S/Z", 5, 10, () => { s_piece = true; z_piece = true; }));
+}
+function update_stats() {
+    lines_stat.innerText = "" + lines_cleared;
+}
+function update_unlocks() {
+    for (let p of unpurchased_purchases) {
+        if (p.visible_at <= total_lines_cleared) {
+            if (!visible_purchases.some((p1) => p1 === p)) {
+                add_unlock(p);
+            }
+        }
+    }
+}
+function add_unlock(purchase) {
+    let btn = document.createElement("button");
+    purchases.appendChild(btn);
+    btn.innerText = purchase.name + ": " + purchase.price;
+    btn.addEventListener("click", (e) => {
+        if (lines_cleared >= purchase.price) {
+            lines_cleared -= purchase.price;
+            purchase.buy_logic();
+            btn.remove();
+            unpurchased_purchases.splice(unpurchased_purchases.indexOf(purchase), 1);
+            visible_purchases.splice(visible_purchases.indexOf(purchase), 1);
+            purchased_purchases.push(purchase);
+        }
+    });
+    visible_purchases.push(purchase);
 }
 //Per https://stackoverflow.com/a/12646864/4698411
 function shuffleArray(array) {
