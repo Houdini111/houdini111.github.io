@@ -1,7 +1,7 @@
 ﻿.game_canvas {
     position: absolute;
     top: 0;
-    left: 50%;
+    left: 0;
     background-color: transparent;
 }
 
@@ -20,7 +20,9 @@
 
 #board_container {
     position: relative;
-    height: auto;
+    width: 0;
+    height: 1px;
+    margin: auto;
 }
 
 

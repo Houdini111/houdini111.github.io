@@ -7,8 +7,9 @@ const DEBUG_MODE: boolean = true;
 
 //Page objects
 let grid_ctx: CanvasRenderingContext2D;
-let board_ctx: CanvasRenderingContext2D;
-let static_board_ctx: CanvasRenderingContext2D;
+let piece_ctx: CanvasRenderingContext2D;
+let ghost_ctx: CanvasRenderingContext2D;
+let static_piece_ctx: CanvasRenderingContext2D;
 let board_background: HTMLDivElement;
 let debug_text: HTMLDivElement;
 let debug_text_2: HTMLDivElement;
@@ -42,8 +43,12 @@ let DAS: number = 150; //Delayed Auto Shift in ms
 let ARR_countdown: number = -1;
 let DAS_countdown: number = -1;
 let repeat_right: boolean;
-let left_down_at: number;
-let right_down_at: number;
+let previous_held_for: number;
+
+let LOCK_DELAY: number = 500; //Miliseconds before lock
+let lock_countdown: number = -1;
+
+let held_piece: Piece;
 
 
 //Control values
@@ -51,10 +56,14 @@ class Controller {
     left_down: boolean;
     left_hold: boolean;
     left_up: boolean;
+    left_down_start: number;
+    left_down_time: number;
 
     right_down: boolean;
     right_hold: boolean;
     right_up: boolean;
+    right_down_start: number;
+    right_down_time: number;
 
     rotate_cw: boolean;
     rotate_ccw: boolean;
@@ -87,6 +96,8 @@ class Controller {
             case "left":
                 if (!this.left_hold) {
                     this.left_down = true;
+                    this.left_down_start = window.performance.now();
+                    this.left_down_time = 0;
                 }
                 this.left_hold = true;
                 this.left_up = false;
@@ -94,6 +105,8 @@ class Controller {
             case "right":
                 if (!this.right_hold) {
                     this.right_down = true;
+                    this.right_down_start = window.performance.now();
+                    this.right_down_time = 0;
                 }
                 this.right_hold = true;
                 this.right_up = false;
@@ -122,11 +135,13 @@ class Controller {
                 this.left_down = false;
                 this.left_hold = false;
                 this.left_up = true;
+                this.left_down_time = this.left_down_start - window.performance.now();
                 return;
             case "right":
                 this.right_down = false;
                 this.right_hold = false;
                 this.right_up = true;
+                this.right_down_time = this.right_down_start - window.performance.now();
                 return;
             case "soft_drop":
                 this.soft_drop = false;
@@ -230,34 +245,65 @@ abstract class Piece {
     rotation: number;
     ghost: Piece;
 
+    initial_x: number;
+    initial_y: number;
+
+    piece_type: string;
+
+    previous_render_rotation: number;
+
 
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+        this.initial_x = x;
+        this.initial_y = y;
         this.rotation = 0;
         this.segments = [];
         for (let i: number = 0; i < 4; i++) {
             this.segments.push(new Segment(0, 0, this));
         }
+
+        this.piece_type = this.constructor.name;
     }
 
-    render(context: CanvasRenderingContext2D) :void {
-        let oldStyle = context.fillStyle;
+    render(context: CanvasRenderingContext2D, absolute_position: boolean, force_render: boolean = false): void {
+        if (absolute_position || this.previous_render_rotation !== this.rotation || force_render) {
+            if (this.previous_render_rotation !== this.rotation || force_render) {
+                context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            }
 
-        context.fillStyle = this.color;
-        for (let i: number = 0; i < this.segments.length; i++) {
-            let segment: Segment = this.segments[i];
-            context.fillRect((this.x + segment.x)*RENDER_SCALE, (this.y + segment.y)*RENDER_SCALE, RENDER_SCALE, RENDER_SCALE);
+            this.previous_render_rotation = this.rotation;
+
+            let oldStyle = context.fillStyle;
+
+            context.fillStyle = this.color;
+            for (let i: number = 0; i < this.segments.length; i++) {
+                let segment: Segment = this.segments[i];
+                if (absolute_position) {
+                    context.fillRect((this.x + segment.x) * RENDER_SCALE, (this.y + segment.y) * RENDER_SCALE, RENDER_SCALE, RENDER_SCALE);
+                }
+                else {
+                    //TODO: Don't re-render on rotate, just rotate canvas
+                    context.fillRect(segment.x * RENDER_SCALE, segment.y * RENDER_SCALE, RENDER_SCALE, RENDER_SCALE);
+                }
+            }
+
+            context.fillStyle = oldStyle;
         }
 
-        context.fillStyle = oldStyle;
+        if (!absolute_position) {
+            context.canvas.style.left = "" + (this.x * RENDER_SCALE);
+            context.canvas.style.top = "" + (this.y * RENDER_SCALE);
+        }
+
     }
 
-    canMove(board: Segment[][], x: number, y: number): boolean {
+    can_move_to(board: Segment[][], x: number, y: number): boolean {
         return this.segments.every((segment) => segment.canParentMove(board, x, y) );
     }
 
-    rotate(cw: boolean): void {
+    rotate(cw: boolean): boolean {
         let before: number = this.rotation;
         this.rotation += cw ? 90 : -90;
         while (this.rotation >= 360) {
@@ -269,14 +315,16 @@ abstract class Piece {
 
         this.rotate_to_rotation();
 
-        if (!this.kick(before, this.rotation)) {
+        let success: boolean = this.kick(before, this.rotation);
+        if (!success) {
             this.rotation = before;
             this.rotate_to_rotation();
         }
-
-        this.handle_ghost();
+        else {
+            this.handle_ghost();
+        }
+        return success;
     }
-
     rotate_to_rotation(): void {
         switch (this.rotation) {
             case 0:
@@ -289,20 +337,22 @@ abstract class Piece {
                 this.rotate_to_270(); break;
         }
     }
-
     abstract rotate_to_0(): void;
-
     abstract rotate_to_90(): void;
-
     abstract rotate_to_180(): void;
-
     abstract rotate_to_270(): void;
+
+    reinit(): void {
+        this.x = this.initial_x;
+        this.y = this.initial_y;
+        this.rotate_to_0();
+        this.handle_ghost();
+    }
 
     make_ghost(): void {
         this.ghost = new Ghost_Piece(this.x, this.y);
         this.ghost.color = this.color;
     }
-
     handle_ghost(): void {
         this.ghost.x = this.x;
         this.ghost.y = this.y;
@@ -313,44 +363,101 @@ abstract class Piece {
 
         let y: number = this.ghost.y;
         for (; y < BOARD_HEIGHT; y++) {
-            if (!this.ghost.canMove(board, this.ghost.x, y)) {
+            if (!this.ghost.can_move_to(board, this.ghost.x, y)) {
                 break;
             }
         }
         this.ghost.y = y - 1;
+        this.ghost.rotation = this.rotation;
     }
 
     kick(before: number, after: number): boolean {
-        if (this.canMove(board, this.x, this.y)) { return true; }
+        if (this.can_move_to(board, this.x, this.y)) { return true; }
         if (this instanceof J_Piece || this instanceof L_Piece || this instanceof S_Piece || this instanceof Z_Piece || this instanceof T_Piece) { return this.srs_jlstz_kick(before, after); }
         if (this instanceof I_Piece) { return this.srs_i_kick(before, after); }
         return false;
     }
-
     srs_jlstz_kick(before: number, after: number): boolean {
         return this.try_kick_set(this.find_kick_set(SRS.jlstz_kicks, before, after));
     }
-
     srs_i_kick(before: number, after: number): boolean {
         return this.try_kick_set(this.find_kick_set(SRS.i_kicks, before, after));
     }
-
     find_kick_set(all_kicks: [number, number][][], before: number, after: number): [number, number][] {
         let CCW_OFFSET: boolean = !((after === 0 && before === 270) || after > before) && !(before === 0 && after === 270);
         let ROT_OFFSET: number = before / 90 * 2;
         let i: number = ROT_OFFSET + (CCW_OFFSET ? 1 : 0);
         return all_kicks[i];
     }
-
     try_kick_set(kicks: [number, number][]): boolean {
         for (let kick of kicks) {
-            if (this.canMove(board, this.x + kick[0], this.y + kick[1])) {
+            if (this.can_move_to(board, this.x + kick[0], this.y + kick[1])) {
                 this.x += kick[0];
                 this.y += kick[1];
                 return true;
             }
         }
         return false;
+    }
+
+    try_move(change: number, horizontal: boolean, from_current: boolean = true): boolean {
+        let continue_cond;
+        let inc;
+
+        let start: number = horizontal ? this.x : this.y;
+        let end: number = start;
+        if (from_current) {
+            end += change;
+            inc = function () { start += Math.sign(change) }
+            if (change > 0) {
+                continue_cond = function () {
+                    return start <= end;
+                };
+            }
+            else {
+                continue_cond = function () {
+                    return start >= end;
+                };
+            }
+        }
+        else {
+            start += change;
+            inc = function () { start -= Math.sign(change) }
+            if (change > 0) {
+                continue_cond = function () {
+                    return start >= end;
+                };
+            }
+            else {
+                continue_cond = function () {
+                    return start <= end;
+                };
+            }
+        }
+
+        let last_good: number = start;
+        for (; continue_cond(); inc()) {
+            if (!this.can_move_to(board, horizontal ? start : this.x, horizontal ? this.y : start)) {
+                break;
+            }
+            else {
+                last_good = start;
+            }
+        }
+        if (last_good !== start) {
+            this.move_to(horizontal ? last_good : this.x, horizontal ? this.y : last_good);
+            return true;
+        }
+        return false;
+    }
+    move(x_change: number, y_change: number): void {
+        this.move_to(this.x + x_change, this.y + y_change);
+    }
+    move_to(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.handle_ghost();
+        board_dirty = true;
     }
 }
 
@@ -912,43 +1019,69 @@ class RandomBag extends RandomPieces {
 }
 
 
-function update(): void {
+function fixed_update(): void {
     let now = window.performance.now();
     delta_time = now - last_update_time;
     last_update_time = now;
 
-    if (DEBUG_MODE) {
-        update_times.push(delta_time);
-        if (update_times.length > UPDATES_TO_TRACK) {
-            update_times.shift();
-        }
+    //if (DEBUG_MODE) {
+    //    update_times.push(delta_time);
+    //    if (update_times.length > UPDATES_TO_TRACK) {
+    //        update_times.shift();
+    //    }
 
-        debug_text.innerText = "delta_time " + delta_time + "\r\n";
-        debug_text.innerText += "instantaneous_ups " + (1000 / delta_time) + "\r\n";
-        let total_time: number = 0;
-        for (let t of update_times) {
-            total_time += t;
-        }
-        debug_text.innerText += UPDATES_TO_TRACK + "_update_mspu " + (total_time / update_times.length) + "\r\n";
-        debug_text.innerText += UPDATES_TO_TRACK + "_update_ups " + (1000/(total_time / update_times.length)) + "\r\n";
-        let debug_str: string = "controller: " + stringify(controller, null, "\t") + "\r\n";
-        debug_text.innerText += debug_str;
+    //    debug_text.innerText = "delta_time " + delta_time + "\r\n";
+    //    debug_text.innerText += "instantaneous_ups " + (1000 / delta_time) + "\r\n";
+    //    let total_time: number = 0;
+    //    for (let t of update_times) {
+    //        total_time += t;
+    //    }
+    //    debug_text.innerText += UPDATES_TO_TRACK + "_update_mspu " + (total_time / update_times.length) + "\r\n";
+    //    debug_text.innerText += UPDATES_TO_TRACK + "_update_ups " + (1000/(total_time / update_times.length)) + "\r\n";
+    //    let debug_str: string = "controller: " + stringify(controller, null, "\t") + "\r\n";
+    //    debug_text.innerText += debug_str;
+    //}
+
+    if (DEBUG_MODE) {
+        debug_text.innerText = "";
     }
 
     if (current_piece) {
-        slide();
-        rotate();
+        slide_repeat();
         gravity();
     }
 
-    if (DEBUG_MODE) {
-        debug_text.innerText += "current_piece: " + stringify(current_piece, null, "\t") + "\r\n";
-        debug_text.innerText += "static pieces: " + static_pieces.length + "\r\n";
-    }
+    //if (DEBUG_MODE) {
+    //    debug_text.innerText += "current_piece: " + stringify(current_piece, null, "\t") + "\r\n";
+    //    debug_text.innerText += "static pieces: " + static_pieces.length + "\r\n";
 
-    if (DEBUG_MODE) {
-        let then = window.performance.now();
-        debug_text.innerText += "update took " + (then - now) + "\r\n";
+    //    let then = window.performance.now();
+    //    debug_text.innerText += "update took " + (then - now) + "\r\n";
+    //}
+
+    render();
+}
+
+function responsive_update(): void {
+    if (current_piece) {
+        if (controller.hold) {
+            hold();
+        }
+        if (controller.left_down || controller.right_down) {
+            slide();
+        }
+        if ((controller.left_up && !repeat_right) || (controller.right_up && repeat_right)) {
+            DAS_countdown = -1;
+            ARR_countdown = -1;
+        }
+        if (controller.hard_drop) {
+            hard_drop();
+        }
+        if (controller.rotate_cw || controller.rotate_ccw) {
+            rotate();
+        }
+
+        render();
     }
 }
 
@@ -959,125 +1092,83 @@ function slide(): void {
         translate--;
         DAS_countdown = DAS;
         repeat_right = false;
-        left_down_at = last_update_time;
+        controller.left_down = false;
+        controller.left_up = false;
     }
-    if (controller.left_hold) {
-        DAS_countdown -= delta_time;
-        if (DAS_countdown < 0) {
-            DAS_countdown = 0;
-        }
-    }
-    if (controller.left_up) {
-        DAS_countdown = -1;
-        ARR_countdown = -1;
-    }
-    
-
-    if (controller.right_down) {
+    else if (controller.right_down) {
         translate++;
         DAS_countdown = DAS;
-        repeat_right = true;
-        right_down_at = last_update_time;
+        repeat_right = true
+        controller.right_down = false;
+        controller.right_up = false;
     }
-    if (controller.right_hold) {
+
+    current_piece.try_move(translate, true);
+}
+
+function slide_repeat(): void {
+    if (DAS_countdown !== -1 && ARR_countdown === -1) {
         DAS_countdown -= delta_time;
         if (DAS_countdown < 0) {
-            DAS_countdown = 0;
+            ARR_countdown = ARR;
         }
     }
-    if (controller.right_up) {
-        controller.left_hold = false;
-        DAS_countdown = -1;
-        ARR_countdown = -1;
-    }
-
-    if (DAS_countdown === 0) {
-        if (ARR > 0) {
-            if (ARR_countdown === -1) {
-                ARR_countdown = ARR;
-            }
-            else {
-                ARR_countdown -= delta_time;
-                if (ARR_countdown < 0) {
-                    ARR_countdown = 0;
-                }
-                if (ARR_countdown === 0) {
-                    if (repeat_right) {
-                        translate++;
-                    }
-                    else {
-                        translate--;
-                    }
-                    ARR_countdown = ARR;
-                }
-            }
+    if (ARR_countdown !== -1) {
+        if (ARR === 0) {
+            current_piece.try_move(repeat_right ? BOARD_WIDTH : -BOARD_WIDTH, true);
         }
         else {
-            if (repeat_right) {
-                translate = BOARD_WIDTH;
-            }
-            else {
-                translate = -BOARD_WIDTH;
-            }
-            ARR_countdown = 0;
-        }
-    }
-
-    if (DEBUG_MODE) {
-        debug_text.innerText += "DAS: " + DAS_countdown + "/" + DAS + "\r\n";
-        debug_text.innerText += "ARR: " + ARR_countdown + "/" + ARR + "\r\n";
-        debug_text.innerText += "repeat_right: " + repeat_right + "\r\n";
-        debug_text.innerText += "translate: " + translate + "\r\n";
-    }
-
-    if (translate !== 0) {
-        let x: number = current_piece.x;
-        for (; repeat_right ? x < current_piece.x + translate : x > current_piece.x + translate; repeat_right ? x++ : x--) {
-            if (!current_piece.canMove(board, repeat_right ? x + 1 : x - 1, current_piece.y)) {
-                break;
+            ARR_countdown -= delta_time;
+            if (ARR_countdown < 0) {
+                ARR_countdown = ARR;
+                current_piece.try_move(repeat_right ? 1 : -1, true);
             }
         }
-        current_piece.x = x;
-        board_dirty = true;
     }
-    current_piece.handle_ghost();
 
-    //"Handled" inputs
-    controller.left_down = false;
-    controller.left_up = false;
-
-    controller.right_down = false;
-    controller.right_up = false;
+    //if (DEBUG_MODE) {
+    //    debug_text.innerText += "DAS: " + DAS_countdown + "/" + DAS + "\r\n";
+    //    debug_text.innerText += "ARR: " + ARR_countdown + "/" + ARR + "\r\n";
+    //}
 }
 
 function rotate(): void {
     if (controller.rotate_cw) {
-        current_piece.rotate(true);
-        board_dirty = true;
+        if (current_piece.rotate(true)) {
+            board_dirty = true;
+            if (lock_countdown !== -1) {
+                lock_countdown = LOCK_DELAY;
+            }
+        }
         controller.rotate_cw = false;
     }
     else if (controller.rotate_ccw) {
-        current_piece.rotate(false);
-        board_dirty = true;
+        if (current_piece.rotate(false)) {
+            board_dirty = true;
+            if (lock_countdown !== -1) {
+                lock_countdown = LOCK_DELAY;
+            }
+        }
         controller.rotate_ccw = false;
     }
 }
 
 function gravity(): void {
     if (current_piece) {
-        if (controller.hard_drop) {
-            for (let y: number = current_piece.y; y < BOARD_HEIGHT; y++) {
-                if (!current_piece.canMove(board, current_piece.x, y)) {
-                    current_piece.y = y - 1;
-                    board_dirty = true;
-                    break;
+        if (!current_piece.can_move_to(board, current_piece.x, current_piece.y + 1)) {
+            IG = 0;
+            if (lock_countdown !== -1) {
+                lock_countdown -= delta_time;
+                if (lock_countdown <= 0) {
+                    solidify()
                 }
             }
-
-            controller.hard_drop = false;
-            solidify();
+            else {
+                lock_countdown = LOCK_DELAY;
+            }
         }
         else {
+            lock_countdown = -1;
             let IG_change: number = (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
             if (controller.soft_drop) {
                 IG_change *= soft_drop_multiplier;
@@ -1087,23 +1178,36 @@ function gravity(): void {
             let to_move = Math.floor(IG);
 
             if (to_move) {
-                let y: number = current_piece.y + to_move;
-                for (; y > current_piece.y; y--) {
-                    if (current_piece.canMove(board, current_piece.x, y)) {
-                        current_piece.y += to_move;
+                let before: number = current_piece.y;
+                if (current_piece.can_move_to(board, current_piece.x, current_piece.y + to_move)) {
+                    board_dirty = true;
+                    IG -= to_move;
+                    current_piece.y += to_move;
+                }
+                else {
+                    if (current_piece.try_move(to_move, false)) {
                         board_dirty = true;
-                        IG -= to_move;
+                        IG -= current_piece.y - before;
                     }
                 }
-                if (y === current_piece.y) {
-                    solidify()
+                if (!current_piece.can_move_to(board, current_piece.x, current_piece.y + 1)) {
+                    lock_countdown = LOCK_DELAY;
                 }
             }
         }
     } 
-    if(DEBUG_MODE) {
-        debug_text.innerText += "IG: " + IG + "\r\n";
+    //if(DEBUG_MODE) {
+    //    debug_text.innerText += "IG: " + IG + "\r\n";
+    //    debug_text.innerText += "Lock Delay: " + lock_countdown + "/" + LOCK_DELAY + "\r\n";
+    //}
+}
+
+function hard_drop(): void {
+    if (current_piece.try_move(BOARD_HEIGHT - current_piece.y, false)) {
+        board_dirty = true;
     }
+    controller.hard_drop = false;
+    solidify();
 }
 
 
@@ -1123,18 +1227,15 @@ function render(): void {
 
 function render_dynamic_board(): void {
     if (current_piece) {
-        board_ctx.clearRect(0, 0, board_ctx.canvas.width, board_ctx.canvas.height);
-        board_ctx.globalAlpha = 0.5;
-        current_piece.ghost.render(board_ctx);
-        board_ctx.globalAlpha = 1;
-        current_piece.render(board_ctx);
+        current_piece.ghost.render(ghost_ctx, false);
+        current_piece.render(piece_ctx, false);
     }
 }
 
 function render_static_board(): void {
-    static_board_ctx.clearRect(0, 0, static_board_ctx.canvas.width, static_board_ctx.canvas.height);
+    static_piece_ctx.clearRect(0, 0, static_piece_ctx.canvas.width, static_piece_ctx.canvas.height);
     for (let p of static_pieces) {
-        p.render(static_board_ctx);
+        p.render(static_piece_ctx, true);
     }
 }
 
@@ -1165,6 +1266,9 @@ function new_piece(): void {
     current_piece.handle_ghost();
     board_dirty = true;
     IG = 0;
+    lock_countdown = -1;
+    current_piece.render(piece_ctx, false, true);
+    current_piece.ghost.render(ghost_ctx, false, true);
 }
 
 function solidify(): void {
@@ -1223,13 +1327,33 @@ function solidify(): void {
                 break;
             }
         }
+        //TODO: Don't re-render the whole board, splice together the board
         static_dirty = true;
     }
     else {
+        //TODO: Don't re-render the whole board, splice together the board
         static_dirty = true;
     }
 
     new_piece();
+}
+
+function hold(): void {
+    if (controller.hold) {
+        if (held_piece) {
+            let temp: Piece = current_piece;
+            current_piece = held_piece;
+            held_piece = temp;
+            current_piece.reinit();
+            current_piece.render(piece_ctx, false, true);
+            current_piece.ghost.render(ghost_ctx, false, true);
+        }
+        else {
+            held_piece = current_piece;
+            new_piece();
+        }
+        controller.hold = false;
+    }
 }
 
 
@@ -1262,8 +1386,9 @@ function on_load(): void {
 
     start_time = window.performance.now();
     last_update_time = start_time;
-    setInterval(update, 0); //0 usually becomes forced to a minimum of 10 by the browser
-    setInterval(render, 0);
+    setInterval(fixed_update, 0); //0 usually becomes forced to a minimum of 10 by the browser
+
+    window.onscroll = function () { window.scrollTo(0, 0);}
 }
 
 
@@ -1291,20 +1416,28 @@ function prepare_canvases(): void {
     grid_ctx.canvas.width = w;
     grid_ctx.canvas.height = h;
 
-    let board_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("board");
-    board_ctx = board_obj.getContext("2d");
-    board_ctx.canvas.width = w;
-    board_ctx.canvas.height = h;
+    let board_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("piece_board");
+    piece_ctx = board_obj.getContext("2d");
+    piece_ctx.canvas.width = RENDER_SCALE*4;
+    piece_ctx.canvas.height = RENDER_SCALE * 4;
+
+    let ghost_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("ghost_board");
+    ghost_ctx = ghost_obj.getContext("2d");
+    ghost_ctx.canvas.width = RENDER_SCALE * 4;
+    ghost_ctx.canvas.height = RENDER_SCALE * 4;
+    ghost_ctx.globalAlpha = 0.3;
 
     let static_board_obj: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("static_board");
-    static_board_ctx = static_board_obj.getContext("2d");
-    static_board_ctx.canvas.width = w;
-    static_board_ctx.canvas.height = h;
+    static_piece_ctx = static_board_obj.getContext("2d");
+    static_piece_ctx.canvas.width = w;
+    static_piece_ctx.canvas.height = h;
 
     if (odd_offset) {
-        grid_ctx.translate(0.5, 0.5); //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
-        board_ctx.translate(0.5, 0.5);
-        static_board_ctx.translate(0.5, 0.5);
+        //For sharpening, see: https://stackoverflow.com/a/23613785/4698411
+        grid_ctx.translate(0.5, 0.5); 
+        piece_ctx.translate(0.5, 0.5);
+        ghost_ctx.translate(0.5, 0.5);
+        static_piece_ctx.translate(0.5, 0.5);
     }
 
     board_background.style.width = ""+w;
@@ -1317,8 +1450,13 @@ function start_key_listener() :void {
         if (event.shiftKey) {
             code = -2;
         }
+        //Ignore (OS) repeated inputs
+        if ((code === controller_map.left && controller.left_hold) || (code === controller_map.right && controller.right_hold)) {
+            return;
+        }
         update_controller(code, true);
-        document.dispatchEvent(new Event('keypress', ({"keyCode": event.keyCode} as { [key: string]: number })));
+
+        responsive_update();
     });
     document.addEventListener("keyup", function (event) {
         let code: number = event.keyCode;
@@ -1326,11 +1464,12 @@ function start_key_listener() :void {
             code = -2;
         }
         update_controller(code, false);
+
+        responsive_update();
     });
 }
 
 function update_controller(keyCode: number = null, isDown: boolean = null): void {
-    //TODO ////////// Handle multiple simultaneous presses (soft drop + other)
     if (keyCode) {
         let name: string = controller_map.get_name_from_code(keyCode);
         if (name === null) {
