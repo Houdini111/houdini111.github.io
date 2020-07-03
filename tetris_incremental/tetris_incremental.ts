@@ -170,6 +170,30 @@ class ControllerMap {
 
 
 //Game objects
+class SRS {
+    //Per https://tetris.wiki/Super_Rotation_System
+    static readonly jlstz_kicks: [number, number][][] = [
+        [[0, 0], [-1, 0], [-1, +1], [0, -2], [-1, -2]], //0->R //CW
+        [[0, 0], [+1, 0], [+1, +1], [0, -2], [+1, -2]], //0->L //CCW
+        [[0, 0], [+1, 0], [+1, -1], [0, +2], [+1, +2]], //R->2 //CW
+        [[0, 0], [+1, 0], [+1, -1], [0, +2], [+1, +2]], //R->0 //CCW
+        [[0, 0], [+1, 0], [+1, +1], [0, -2], [+1, -2]], //2->L //CW 
+        [[0, 0], [-1, 0], [-1, +1], [0, -2], [-1, -2]], //2->R //CCW
+        [[0, 0], [-1, 0], [-1, -1], [0, +2], [-1, +2]], //L->0 //CW
+        [[0, 0], [-1, 0], [-1, -1], [0, +2], [-1, +2]]  //L->2 //CCW
+    ];
+    static readonly i_kicks: [number, number][][] = [
+        [[0, 0], [-2, 0], [+1, 0], [-2, -1], [+1, +2]], //0->R  //CW
+        [[0, 0], [+2, 0], [-1, 0], [+2, +1], [-1, -2]], //R->0  //CCW
+        [[0, 0], [-1, 0], [+2, 0], [-1, +2], [+2, -1]], //R->2  //CW
+        [[0, 0], [+1, 0], [-2, 0], [+1, -2], [-2, +1]], //2->R  //CCW
+        [[0, 0], [+2, 0], [-1, 0], [+2, +1], [-1, -2]], //2->L  //CW
+        [[0, 0], [-2, 0], [+1, 0], [-2, -1], [+1, +2]], //L->2  //CCW
+        [[0, 0], [+1, 0], [-2, 0], [+1, -2], [-2, +1]], //L->0  //CW
+        [[0, 0], [-1, 0], [+2, 0], [-1, +2], [+2, -1]]  //0->L  //CCW
+    ];
+}
+
 class Segment {
     x: number;
     y: number;
@@ -206,6 +230,7 @@ abstract class Piece {
     rotation: number;
     ghost: Piece;
 
+
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -233,6 +258,7 @@ abstract class Piece {
     }
 
     rotate(cw: boolean): void {
+        let before: number = this.rotation;
         this.rotation += cw ? 90 : -90;
         while (this.rotation >= 360) {
             this.rotation -= 360;
@@ -241,6 +267,17 @@ abstract class Piece {
             this.rotation += 360;
         }
 
+        this.rotate_to_rotation();
+
+        if (!this.kick(before, this.rotation)) {
+            this.rotation = before;
+            this.rotate_to_rotation();
+        }
+
+        this.handle_ghost();
+    }
+
+    rotate_to_rotation(): void {
         switch (this.rotation) {
             case 0:
                 this.rotate_to_0(); break;
@@ -251,25 +288,15 @@ abstract class Piece {
             case 270:
                 this.rotate_to_270(); break;
         }
-
-        this.handle_ghost();
     }
 
-    rotate_to_0(): void {
+    abstract rotate_to_0(): void;
 
-    }
+    abstract rotate_to_90(): void;
 
-    rotate_to_90(): void {
+    abstract rotate_to_180(): void;
 
-    }
-
-    rotate_to_180(): void {
-
-    }
-
-    rotate_to_270(): void {
-
-    }
+    abstract rotate_to_270(): void;
 
     make_ghost(): void {
         this.ghost = new Ghost_Piece(this.x, this.y);
@@ -292,10 +319,46 @@ abstract class Piece {
         }
         this.ghost.y = y - 1;
     }
+
+    kick(before: number, after: number): boolean {
+        if (this.canMove(board, this.x, this.y)) { return true; }
+        if (this instanceof J_Piece || this instanceof L_Piece || this instanceof S_Piece || this instanceof Z_Piece || this instanceof T_Piece) { return this.srs_jlstz_kick(before, after); }
+        if (this instanceof I_Piece) { return this.srs_i_kick(before, after); }
+        return false;
+    }
+
+    srs_jlstz_kick(before: number, after: number): boolean {
+        return this.try_kick_set(this.find_kick_set(SRS.jlstz_kicks, before, after));
+    }
+
+    srs_i_kick(before: number, after: number): boolean {
+        return this.try_kick_set(this.find_kick_set(SRS.i_kicks, before, after));
+    }
+
+    find_kick_set(all_kicks: [number, number][][], before: number, after: number): [number, number][] {
+        let CCW_OFFSET: boolean = !((after === 0 && before === 270) || after > before) && !(before === 0 && after === 270);
+        let ROT_OFFSET: number = before / 90 * 2;
+        let i: number = ROT_OFFSET + (CCW_OFFSET ? 1 : 0);
+        return all_kicks[i];
+    }
+
+    try_kick_set(kicks: [number, number][]): boolean {
+        for (let kick of kicks) {
+            if (this.canMove(board, this.x + kick[0], this.y + kick[1])) {
+                this.x += kick[0];
+                this.y += kick[1];
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 class Ghost_Piece extends Piece {
-
+    rotate_to_0(): void { }
+    rotate_to_90(): void { }
+    rotate_to_180(): void { }
+    rotate_to_270(): void { }
 }
 
 class O_Piece extends Piece {
@@ -318,6 +381,11 @@ class O_Piece extends Piece {
 
         this.make_ghost();
     }
+
+    rotate_to_0(): void { }
+    rotate_to_90(): void { }
+    rotate_to_180(): void { }
+    rotate_to_270(): void { }
 }
 
 class I_Piece extends Piece {
@@ -1040,6 +1108,7 @@ function gravity(): void {
 
 
 function render(): void {
+    //let b = window.performance.now();
     if (board_dirty) {
         render_dynamic_board();
         board_dirty = false;
@@ -1048,6 +1117,8 @@ function render(): void {
         render_static_board(); 
         static_dirty = false;
     }
+    //let a = window.performance.now();
+    //debug_text_3.innerText += "," + (a-b);
 }
 
 function render_dynamic_board(): void {
@@ -1192,7 +1263,7 @@ function on_load(): void {
     start_time = window.performance.now();
     last_update_time = start_time;
     setInterval(update, 0); //0 usually becomes forced to a minimum of 10 by the browser
-    setInterval(render, 16);
+    setInterval(render, 0);
 }
 
 
@@ -1263,7 +1334,7 @@ function update_controller(keyCode: number = null, isDown: boolean = null): void
     if (keyCode) {
         let name: string = controller_map.get_name_from_code(keyCode);
         if (name === null) {
-            console.log("unsupported keycode " + keyCode);
+            //console.log("unsupported keycode " + keyCode);
         }
         if (isDown) {
             controller.press(name);
