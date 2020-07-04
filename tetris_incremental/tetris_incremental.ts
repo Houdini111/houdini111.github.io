@@ -62,16 +62,20 @@ let purchased_purchases: Purchase[];
 
 //Purchases
 class Purchase {
+    id: number;
     name: string;
     visible_at: number;
     price: number;
     buy_logic: () => void;
+    prereqs: number[];
 
-    constructor(name: string, visible_at: number, price: number, buy_logic: () => void) {
+    constructor(id: number, name: string, visible_at: number, price: number, buy_logic: () => void, prereq_ids: number[] = null) {
+        this.id = id;
         this.name = name;
         this.visible_at = visible_at;
         this.price = price;
         this.buy_logic = buy_logic;
+        this.prereqs = prereq_ids;
     }
 }
 
@@ -83,6 +87,15 @@ let l_piece: boolean;
 let j_piece: boolean;
 let t_piece: boolean;
 let i_piece: boolean;
+let left: boolean;
+let right: boolean;
+let gravity: boolean;
+let auto_repeat: boolean;
+let soft_drop: boolean;
+let hard_drop: boolean;
+let hold: boolean;
+let cw: boolean;
+let ccw: boolean;
 
 
 //Control values
@@ -1100,7 +1113,7 @@ function fixed_update(): void {
 
     if (current_piece) {
         slide_repeat();
-        gravity();
+        apply_gravity();
     }
 
     //if (DEBUG_MODE) {
@@ -1116,18 +1129,18 @@ function fixed_update(): void {
 
 function responsive_update(): void {
     if (current_piece) {
-        if (controller.hold) {
-            hold();
+        if (controller.hold && do_hold) {
+            do_hold();
         }
-        if (controller.left_down || controller.right_down) {
+        if ((controller.left_down && left) || (controller.right_down && right)) {
             slide();
         }
-        if ((controller.left_up && !repeat_right) || (controller.right_up && repeat_right)) {
+        if ((controller.left_up && !repeat_right && auto_repeat) || (controller.right_up && repeat_right && auto_repeat)) {
             DAS_countdown = -1;
             ARR_countdown = -1;
         }
         if (controller.hard_drop) {
-            hard_drop();
+            do_hard_drop();
         }
         if (controller.rotate_cw || controller.rotate_ccw) {
             rotate();
@@ -1159,21 +1172,23 @@ function slide(): void {
 }
 
 function slide_repeat(): void {
-    if (DAS_countdown !== -1 && ARR_countdown === -1) {
-        DAS_countdown -= delta_time;
-        if (DAS_countdown < 0) {
-            ARR_countdown = ARR;
-        }
-    }
-    if (ARR_countdown !== -1) {
-        if (ARR === 0) {
-            current_piece.try_move(repeat_right ? BOARD_WIDTH : -BOARD_WIDTH, true);
-        }
-        else {
-            ARR_countdown -= delta_time;
-            if (ARR_countdown < 0) {
+    if (auto_repeat) {
+        if (DAS_countdown !== -1 && ARR_countdown === -1) {
+            DAS_countdown -= delta_time;
+            if (DAS_countdown < 0) {
                 ARR_countdown = ARR;
-                current_piece.try_move(repeat_right ? 1 : -1, true);
+            }
+        }
+        if (ARR_countdown !== -1) {
+            if (ARR === 0) {
+                current_piece.try_move(repeat_right ? BOARD_WIDTH : -BOARD_WIDTH, true);
+            }
+            else {
+                ARR_countdown -= delta_time;
+                if (ARR_countdown < 0) {
+                    ARR_countdown = ARR;
+                    current_piece.try_move(repeat_right ? 1 : -1, true);
+                }
             }
         }
     }
@@ -1185,7 +1200,7 @@ function slide_repeat(): void {
 }
 
 function rotate(): void {
-    if (controller.rotate_cw) {
+    if (controller.rotate_cw && cw) {
         if (current_piece.rotate(true)) {
             board_dirty = true;
             if (lock_countdown !== -1) {
@@ -1194,7 +1209,7 @@ function rotate(): void {
         }
         controller.rotate_cw = false;
     }
-    else if (controller.rotate_ccw) {
+    else if (controller.rotate_ccw && ccw) {
         if (current_piece.rotate(false)) {
             board_dirty = true;
             if (lock_countdown !== -1) {
@@ -1205,8 +1220,8 @@ function rotate(): void {
     }
 }
 
-function gravity(): void {
-    if (current_piece) {
+function apply_gravity(): void {
+    if (current_piece && gravity) {
         if (!current_piece.can_move_to(board, current_piece.x, current_piece.y + 1)) {
             IG = 0;
             if (lock_countdown !== -1) {
@@ -1222,7 +1237,7 @@ function gravity(): void {
         else {
             lock_countdown = -1;
             let IG_change: number = (delta_time / 16.66) * gravity_speed; //Updates_completed / updates_per_block == blocks_to_move
-            if (controller.soft_drop) {
+            if (controller.soft_drop && soft_drop) {
                 IG_change *= soft_drop_multiplier;
             }
             IG += IG_change;
@@ -1254,12 +1269,14 @@ function gravity(): void {
     //}
 }
 
-function hard_drop(): void {
-    if (current_piece.try_move(BOARD_HEIGHT - current_piece.y, false)) {
-        board_dirty = true;
+function do_hard_drop(): void {
+    if (hard_drop) {
+        if (current_piece.try_move(BOARD_HEIGHT - current_piece.y, false)) {
+            board_dirty = true;
+        }
+        controller.hard_drop = false;
+        solidify();
     }
-    controller.hard_drop = false;
-    solidify();
 }
 
 
@@ -1388,7 +1405,7 @@ function solidify(): void {
     new_piece();
 }
 
-function hold(): void {
+function do_hold(): void {
     if (controller.hold) {
         if (held_piece) {
             let temp: Piece = current_piece;
@@ -1444,13 +1461,6 @@ function on_load(): void {
     controller_map = new ControllerMap();
     lines_cleared = 0;
     total_lines_cleared = 0;
-    o_piece = true;
-    s_piece = false;
-    z_piece = false;
-    l_piece = false;
-    j_piece = false;
-    t_piece = false;
-    i_piece = false;
 
 
     debug_text = <HTMLDivElement>document.getElementById("debug_text");
@@ -1469,7 +1479,8 @@ function on_load(): void {
 
     start_key_listener();
 
-    new_piece();
+    //new_piece(); //Now occurs on first purchase
+    update_purchaes();
 
     start_time = window.performance.now();
     last_update_time = start_time;
@@ -1530,7 +1541,11 @@ function prepare_canvases(): void {
 
     board_container.style.width = ""+w;
     board_container.style.height = ""+h;
-    board_container.style.flexBasis = ""+w;
+    board_container.style.flexBasis = "" + w;
+
+    ghost_obj.style.visibility = "hidden";
+    board_background.style.visibility = "hidden";
+    grid_obj.style.visibility = "hidden";
 }
 
 function start_key_listener(): void {
@@ -1581,7 +1596,7 @@ function add_line(number: number = 1) {
     lines_cleared += number;
     total_lines_cleared += number;
     update_stats();
-    update_unlocks();
+    update_purchaes();
 }
 
 function init_unlocks(): void {
@@ -1589,24 +1604,44 @@ function init_unlocks(): void {
     purchased_purchases = [];
     visible_purchases = [];
 
-    unpurchased_purchases.push(new Purchase("Unlock S/Z", 5, 10, () => { s_piece = true; z_piece = true; }));
+    unpurchased_purchases.push(new Purchase(0, "Unlock Board", 0, 0, () => { board_background.style.visibility = null; }));
+    unpurchased_purchases.push(new Purchase(1, "Unlock S Piece", 0, 0, () => { s_piece = true; new_piece(); }, [0]));
+    unpurchased_purchases.push(new Purchase(2, "Unlock Z Piece", 5, 10, () => { z_piece = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(3, "Unlock O Piece", 10, 10, () => { o_piece = true; }, [2]));
+    unpurchased_purchases.push(new Purchase(4, "Unlock Ghost", 5, 10, () => { ghost_ctx.canvas.style.visibility = null; }, [1]));
+    unpurchased_purchases.push(new Purchase(5, "Unlock Grid", 5, 10, () => { grid_ctx.canvas.style.visibility = null; }, [1]));
+    unpurchased_purchases.push(new Purchase(7, "Unlock Gravity", 0, 0, () => { gravity = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(6, "Unlock Left Movement", 0, 0, () => { left = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(8, "Unlock Right Movement", 0, 0, () => { right = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(9, "Unlock Auto-Repeat", 10, 15, () => { auto_repeat = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(10, "Unlock Soft Drop", 0, 1, () => { soft_drop = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(11, "Unlock Hard Drop", 12, 25, () => { hard_drop = true; }, [10]));
+    unpurchased_purchases.push(new Purchase(12, "Unlock L Piece", 8, 15, () => { l_piece = true; }, [3]));
+    unpurchased_purchases.push(new Purchase(13, "Unlock J Piece", 12, 25, () => { j_piece = true; }, [12]));
+    unpurchased_purchases.push(new Purchase(14, "Unlock T Piece", 20, 35, () => { t_piece = true; }, [13]));
+    unpurchased_purchases.push(new Purchase(15, "Unlock I Piece", 27, 50, () => { i_piece = true; }, [14]));
+    unpurchased_purchases.push(new Purchase(16, "Unlock CW Rotation", 1, 5, () => { cw = true; }, [1]));
+    unpurchased_purchases.push(new Purchase(17, "Unlock CCW Rotation", 1, 5, () => { ccw = true; }, [1]));
+    //Ideas: color, lock delay, the ability to customize ARR, DAS, Soft drop multiplier, and controls, toggle ghost
 }
 
 function update_stats(): void {
     lines_stat.innerText = "" + lines_cleared;
 }
 
-function update_unlocks(): void {
+function update_purchaes(): void {
     for (let p of unpurchased_purchases) {
         if (p.visible_at <= total_lines_cleared) {
             if (!visible_purchases.some((p1) => p1 === p)) {
-                add_unlock(p);
+                if (p.prereqs === null || p.prereqs.every(p_id => purchased_purchases.some(pp => pp.id === p_id))) {
+                    add_purchase(p);
+                }
             }
         }
     }
 }
 
-function add_unlock(purchase: Purchase) {
+function add_purchase(purchase: Purchase) {
     let btn: HTMLButtonElement = document.createElement("button");
     purchases.appendChild(btn);
     btn.innerText = purchase.name + ": " + purchase.price;
@@ -1618,6 +1653,8 @@ function add_unlock(purchase: Purchase) {
             unpurchased_purchases.splice(unpurchased_purchases.indexOf(purchase), 1);
             visible_purchases.splice(visible_purchases.indexOf(purchase), 1);
             purchased_purchases.push(purchase);
+            update_stats();
+            update_purchaes();
         }
     });
     visible_purchases.push(purchase);
