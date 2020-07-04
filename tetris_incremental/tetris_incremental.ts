@@ -1622,7 +1622,7 @@ function init_unlocks(): void {
     unpurchased_purchases.push(new Purchase(15, "Unlock I Piece", 27, 50, () => { i_piece = true; }, [14]));
     unpurchased_purchases.push(new Purchase(16, "Unlock CW Rotation", 1, 5, () => { cw = true; }, [1]));
     unpurchased_purchases.push(new Purchase(17, "Unlock CCW Rotation", 1, 5, () => { ccw = true; }, [1]));
-    //Ideas: color, lock delay, the ability to customize ARR, DAS, Soft drop multiplier, and controls, toggle ghost
+    //Ideas: color, lock delay, toggle ghost, an auto-player, "multiplayer", and the ability to customize ARR, DAS, Soft drop multiplier, and controls
 }
 
 function update_stats(): void {
