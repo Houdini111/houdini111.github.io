@@ -13,7 +13,7 @@ let today;
 window.onload = function() {
 	annoucement_moment = moment("2019-06-10", "YYYY-MM-DD");
 	start = annoucement_moment.clone().subtract(COLUMN_COUNT-1, "days");
-	today = moment();
+	today = moment().startOf("day");
 	for (let special_day of special_days) {
 		special_day.moment = moment(special_day.date);
 	}
@@ -60,6 +60,7 @@ function createCell(day, special_days, empty = false) {
 		const thisDay = start.clone().add(day, "days");
 		const diff = today.diff(thisDay, "days");
 		if (diff === 0) {
+			debugger;
 			cellContents.classList.add("today");
 		}
 		else if (diff < 0) {
