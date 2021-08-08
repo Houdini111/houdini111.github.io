@@ -1,0 +1,131 @@
+:root {
+	--table-spacing: 5px
+}
+
+body {
+	height: 100%;
+	background-image: url("imgs/bg.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	font-family: ITCAvantGardeStd-Md, sans-serif;
+	color: white;
+}
+
+h1 {
+	text-align: center;
+}
+
+#calendar_body {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#calendar_body td {
+	width: calc( (100% - (var(--table-spacing) / 55)) / 55);
+	position: relative;
+}
+
+#calendar_body td:after {
+	content: '';
+    display: block;
+    margin-top: 100%;
+}
+
+.content {
+	position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.past_day {
+    background: white;
+}
+
+.today {
+	background: linear-gradient(90deg,white 0%, transparent 100%);
+	border: 1px solid white;
+}
+
+.future_day {
+	background: transparent;
+	border: 1px solid white;
+}
+
+#calendar_body, #calendar_body th, #calendar_body td {
+	border: 1px solid transparent;
+	border-spacing: var(--table-spacing);
+}
+
+
+#jan_body {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#jan_body td {
+	width: calc( (100% - (var(--table-spacing) / 20)) / 20);
+	position: relative;
+}
+
+#jan_body td:after {
+	content: '';
+    display: block;
+    margin-top: 100%;
+}
+
+#jan_body, #jan_body th, #jan_body td {
+	border: 1px solid transparent;
+	border-spacing: var(--table-spacing);
+}
+
+
+
+#annoucement {
+	background-color: red;
+	background-image: url("imgs/annoucement.jpg");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+#leak {
+	background-color: orange;
+	background-image: url("imgs/leak.png");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+#reveal {
+	background-color: blue;
+	background-image: url("imgs/reveal.jpg");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+#release {
+	background-color: gold;
+	background-image: url("imgs/release.jpg");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+.hover {
+	position: absolute;
+	height: 90px;
+	width: 160px;
+	z-index: 100;
+	
+	background-size: contain;
+	background-repeat: no-repeat;
+	
+	top: 50%;
+	right: 50%;
+	-webkit-transform: translate(50%, -50%);
+    -moz-transform: translate(50%, -50%);
+    -ms-transform: translate(50%, -50%);
+    -o-transform: translate(50%, -50%);
+    transform: translate(50%, -50%);
+}
