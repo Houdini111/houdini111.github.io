@@ -89,7 +89,7 @@ function load_svg(file_name) {
 		xhr.onload = function(e) {
 		  // You might also want to check for xhr.readyState/xhr.status here
 		  document.getElementById('svgContainer')
-			.appendChild(xhr.responseXML.documentElement);
+			.innerHTML = xhr.responseXML.documentElement;
 		};
 		xhr.send("");
 	}
