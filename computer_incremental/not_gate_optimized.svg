@@ -1,20 +1,28 @@
 <svg width="100mm" height="100mm" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
- <path d="m67.752 47.153h15.875" fill="none" stroke="#000" stroke-width=".85"/>
- <path d="m51.814 47.211h-26.764" fill="none" stroke="#000" stroke-width=".85"/>
- <text x="12.74198" y="50.681927" fill="#000000" font-family="sans-serif" font-size="33.961px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="12.74198" y="50.681927" font-size="13.584px" stroke-width=".84902">+</tspan></text>
- <text x="37.04686" y="34.309772" fill="#000000" font-family="sans-serif" font-size="13.584px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="37.04686" y="34.309772" font-size="13.584px" stroke-width=".84902">Q</tspan></text>
- <g fill="none" stroke="#000">
-  <path d="m42.307 38.426v8.6194" stroke-width=".85"/>
-  <path d="m84.024 43.592v7.1495" stroke-width=".85"/>
-  <path d="m85.444 44.544v5.312" stroke-width=".73267"/>
-  <path d="m86.764 45.53v2.7729" stroke-width=".85"/>
+ <style>.fill_this {  }</style>
+ <path d="m64.127 46.823h15.119" fill="none" stroke="#000" stroke-width=".85"/>
+ <path d="m35.75 46.833h-10.889" fill="none" stroke="#000" stroke-width=".85"/>
+ <g transform="translate(11.339 2.4568)" aria-label="+">
+  <path class="fill_this" d="m10.938 44.053h-3.615v3.615h-1.1011v-3.615h-3.615v-1.0613h3.615v-3.615h1.1011v3.615h3.615z" stroke-width=".84902"/>
  </g>
- <g transform="translate(-2.5513 3.9215)">
-  <text x="57.613216" y="55.618465" font-family="sans-serif" font-size="13.584px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="57.613216" y="55.618465" stroke-width=".84902">A</tspan></text>
+ <g transform="translate(-50.402 2.6231)" aria-label="Q">
+  <path class="fill_this " d="m91.027 33.896q-0.39798 0.09949-0.78932 0.13929-0.38471 0.04643-0.78932 0.04643-1.1541 0-1.8572-0.63676-0.69646-0.63013-0.75616-1.8108-0.15919 0.02653-0.31175 0.03317-0.14592 0.01327-0.28522 0.01327-1.0414 0-1.897-0.34491-0.84902-0.34491-1.446-1.0016t-0.92198-1.6118q-0.31838-0.95515-0.31838-2.1822 0-1.2072 0.31838-2.1623 0.31838-0.96178 0.92861-1.645 0.5837-0.65003 1.446-0.99494 0.86892-0.34491 1.8904-0.34491 1.0613 0 1.9037 0.35155 0.84902 0.34491 1.4394 0.98831 0.6036 0.6633 0.92198 1.6251 0.32502 0.96178 0.32502 2.1822 0 1.8108-0.74289 3.0512-0.73626 1.2404-1.9833 1.7378 0.02653 0.75616 0.35818 1.174 0.33165 0.41788 1.2072 0.41788 0.27195 0 0.6434-0.08623 0.37808-0.07959 0.53727-0.14592h0.17909zm-1.5654-7.356q0-1.9236-0.86228-2.9649-0.86228-1.048-2.3547-1.048-1.5057 0-2.368 1.048-0.85565 1.0414-0.85565 2.9649 0 1.9435 0.87555 2.9782 0.87555 1.0281 2.3481 1.0281t2.3414-1.0281q0.87555-1.0347 0.87555-2.9782z" stroke-width=".84902"/>
+ </g>
+ <path d="m35.75 38.214v8.6194" fill="none" stroke="#000" stroke-width=".85"/>
+ <g transform="translate(-.8032 2.5513)" fill="none" stroke="#000">
+  <path d="m80.464 40.717v7.1495" stroke-width=".85"/>
+  <path d="m81.884 41.669v5.312" stroke-width=".73267"/>
+  <path d="m83.203 42.655v2.7729" stroke-width=".85"/>
+ </g>
+ <path d="m35.75 46.833h11.994" fill="none" stroke="#000" stroke-width=".85"/>
+ <g transform="translate(-6.4958 3.6023)">
+  <g stroke-width=".84902" aria-label="A">
+   <path class="fill_this" d="m66.727 55.618h-1.3996l-0.96841-2.7527h-4.2716l-0.96841 2.7527h-1.3332l3.5951-9.8765h1.7511zm-2.7726-3.8803-1.7312-4.8487-1.7378 4.8487z" stroke-width=".84902"/>
+  </g>
   <g stroke="#000">
-   <circle cx="69.827" cy="43.22" r=".79596" fill="#fff" stroke-width=".84902"/>
+   <path class="fill_this" d="m70.622 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
    <path d="m54.24 43.231 14.148-8.1681" fill="none" stroke-width=".85"/>
-   <circle cx="54.276" cy="43.22" r=".79596" fill="#fff" stroke-width=".84902"/>
+   <path class="fill_this" d="m55.072 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
   </g>
  </g>
 </svg>
