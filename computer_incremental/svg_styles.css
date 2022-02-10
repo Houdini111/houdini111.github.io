@@ -1,5 +1,4 @@
-path {
-	text: white;
+path, text {
 	fill: white;
 	stroke: white;
 }

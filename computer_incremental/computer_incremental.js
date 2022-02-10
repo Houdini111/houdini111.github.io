@@ -61,7 +61,6 @@ function load_data_to_ui() {
 }
 
 function load_svg(file_name) {
-	debugger;
 	if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '') {
 		let fileFieldElem = document.createElement('input');
 		fileFieldElem.type = 'file';
