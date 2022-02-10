@@ -25,6 +25,8 @@ function init() {
 	window.addEventListener('mouseup', function(e) {
 		earlyEndTransitions(EarlyEndEvents.MouseUp);
 	});
+
+	init_transactions();
 	
 	previous_update_time = now_ms();
 	
@@ -41,6 +43,49 @@ function load() {
 	load_fixed_data_to_ui();
 	load_data_to_ui();
 	setup_next_main();
+}
+
+function init_transactions() {
+	//TODO: Automate the setting of classes and the checking of costs via associating a transaction with a button
+	let transactions = [];
+	let transistor_transaction = new Transaction(null, null, function () {
+		save_data.transistors++;
+	});
+	transactions.push(transistor_transaction);
+	add_button_hold_transaction('transistor_add_button', transistor_transaction);
+	let not_transaction = new Transaction('not_gates', not_gate_cost, function () {
+		save_data.not_gates++;
+		set_all_for_class('transistor_count', save_data.transistors);
+		check_transistor_costs();
+	});
+	transactions.push(not_transaction);
+	let and_transaction = new Transaction('and_gates', and_gate_cost, function () {
+		save_data.and_gates++;
+		set_all_for_class('transistor_count', save_data.transistors);
+		set_all_for_class('and_gate_count', save_data.and_gates);
+		check_transistor_costs();
+		check_and_gate_counts();
+	});
+	add_button_hold_transaction('not_gate_add_button', not_transaction);
+	transactions.push(and_transaction);
+	let or_transaction = new Transaction('or_gates', or_gate_cost, function () {
+		save_data.or_gates++;
+		set_all_for_class('transistor_count', save_data.transistors);
+		set_all_for_class('or_gate_count', save_data.and_gates);
+		check_transistor_costs();
+		check_or_gate_counts();
+	});
+	add_button_hold_transaction('or_gate_add_button', or_transaction);
+	transactions.push(or_transaction);
+	let xor_transaction = new Transaction('xor_gates', xor_gate_cost, function () {
+		save_data.xor_gates++;
+		set_all_for_class('transistor_count', save_data.transistors);
+		set_all_for_class('xor_gate_count', save_data.and_gates);
+		check_transistor_costs();
+		check_xor_gate_counts();
+	});
+	transactions.push(xor_transaction);
+	add_button_hold_transaction('xor_gate_add_button', xor_transaction);
 }
 
 function load_fixed_data_to_ui() {
@@ -86,11 +131,17 @@ function update_framerate_info(dt) {
 		frametimes.shift();
 	}
 	const avg_frametime = average_arr(frametimes).toFixed(3);
-	const avg_framerate = (1000/avg_frametime).toFixed(0);
+	const avg_framerate = (1000/avg_frametime).toFixed(1);
 	framerate_info_div.innerHTML = '' + avg_framerate + ' / ' + target_framerate + ' (' + (100*avg_framerate/target_framerate).toFixed(2) + '%)';
-	frametime_info_div.innerHTML = avg_frametime + 'ms | ' + update_time + 'ms';
+	frametime_info_div.innerHTML = 'Avg frametime: ' + avg_frametime + 'ms<br/>Last update length: ' + update_time + 'ms';
 }
 
+function add_button_hold_transaction(elemId, transaction) {
+	let elem = document.getElementById(elemId);
+	if (elem) {
+		elem.addEventListener('mousedown', transaction.attempt);
+    }
+}
 
 function button_hold_click(event, method) {
 	let eventOrigin = getEventTarget(event);
@@ -98,56 +149,6 @@ function button_hold_click(event, method) {
 		if (method) { method(); } 
 		button_hold_click(event, method); 
 	}, EarlyEndEvents.MouseUp ));
-}
-
-function transistor_add() {
-	save_data.transistors++;
-	set_all_for_class('transistor_count', save_data.transistors);
-	check_transistor_costs();
-}
-
-function not_gate_add() {
-	if (save_data.transistors >= not_gate_cost) {
-		save_data.transistors -= not_gate_cost;
-		save_data.not_gates++;
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('not_gate_count', save_data.not_gates);
-		check_transistor_costs();
-		check_not_gate_counts();
-	}
-}
-
-function and_gate_add() {
-	if (save_data.transistors >= and_gate_cost) {
-		save_data.transistors -= and_gate_cost;
-		save_data.and_gates++;
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('and_gate_count', save_data.and_gates);
-		check_transistor_costs();
-		check_and_gate_counts();
-	}
-}
-
-function or_gate_add() {
-	if (save_data.transistors >= or_gate_cost) {
-		save_data.transistors -= or_gate_cost;
-		save_data.or_gates++;
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('or_gate_count', save_data.or_gates);
-		check_transistor_costs();
-		check_or_gate_counts();
-	}
-}
-
-function xor_gate_add() {
-	if (save_data.transistors >= xor_gate_cost) {
-		save_data.transistors -= xor_gate_cost;
-		save_data.xor_gates++;
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('xor_gate_count', save_data.xor_gates);
-		check_transistor_costs();
-		check_xor_gate_counts();
-	}
 }
 
 function check_transistor_costs() {
