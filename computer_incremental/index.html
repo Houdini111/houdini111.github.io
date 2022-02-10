@@ -3,12 +3,17 @@
 	<head>
 		<title>Computer Incremental</title>
 		<meta charset="UTF-8">
-		<link rel="stylesheet" href="computer_incremental.css">
-		<link rel="stylesheet" href="svg_styles.css">
+		<link rel="stylesheet" href="assets/css/computer_incremental.css">
+		<link rel="stylesheet" href="assets/css/svg_styles.css">
 	</head>
 	<body>
-		<script type="text/javascript" src="computer_incremental.js"> </script>
-		
+		<script type="text/javascript" src="assets/js/utils.js"></script>
+		<script type="text/javascript" src="assets/js/save_system.js"></script>
+		<script type="text/javascript" src="assets/js/constants.js"></script>
+		<script type="text/javascript" src="assets/js/svg.js"></script>
+		<script type="text/javascript" src="assets/js/transitions.js"></script>
+		<script type="text/javascript" src="assets/js/computer_incremental.js"></script>
+
 		<div id="game">
 			<table>
 				<tr>
@@ -33,7 +38,6 @@
 									<span class="transistor_count"></span>
 								</td>
 								<td>
-									
 								</td>
 							</tr>
 						</table>
@@ -123,12 +127,12 @@
 									</div>
 								</td>
 							</tr>
-						<table>
+							<table>
 					</td>
 				</tr>
 			</table>
 		</div>
-		
+
 		<div id="debug_info">
 			<div id="framerate_info"> </div>
 			<div id="frametime_info"> </div>
