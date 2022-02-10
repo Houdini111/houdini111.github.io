@@ -31,8 +31,6 @@ function init() {
 		earlyEndTransitions(EarlyEndEvents.MouseUp);
 	});
 	
-	load_svg();
-	
 	previous_update_time = now_ms();
 	
 	load();
@@ -62,7 +60,7 @@ function load_data_to_ui() {
 	check_transistor_costs();
 }
 
-function load_svg() {
+function load_svg(file_name) {
 	debugger;
 	if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '') {
 		let fileFieldElem = document.createElement('input');
@@ -82,14 +80,15 @@ function load_svg() {
 		fileFieldElem.click();
 	}
 	else {
+		file_name = file_name + '_gate_optimized.svg';
 		xhr = new XMLHttpRequest();
-		xhr.open("GET", "and_gate_optimized.svg", false);
+		xhr.open('GET', file_name, false);
 		// Following line is just to be on the safe side;
 		// not needed if your server delivers SVG with correct MIME type
-		xhr.overrideMimeType("image/svg+xml");
+		xhr.overrideMimeType('image/svg+xml');
 		xhr.onload = function(e) {
 		  // You might also want to check for xhr.readyState/xhr.status here
-		  document.getElementById("svgContainer")
+		  document.getElementById('svgContainer')
 			.appendChild(xhr.responseXML.documentElement);
 		};
 		xhr.send("");

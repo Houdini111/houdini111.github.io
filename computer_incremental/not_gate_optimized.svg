@@ -1,0 +1,20 @@
+<svg width="100mm" height="100mm" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <path d="m67.752 47.153h15.875" fill="none" stroke="#000" stroke-width=".85"/>
+ <path d="m51.814 47.211h-26.764" fill="none" stroke="#000" stroke-width=".85"/>
+ <text x="12.74198" y="50.681927" fill="#000000" font-family="sans-serif" font-size="33.961px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="12.74198" y="50.681927" font-size="13.584px" stroke-width=".84902">+</tspan></text>
+ <text x="37.04686" y="34.309772" fill="#000000" font-family="sans-serif" font-size="13.584px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="37.04686" y="34.309772" font-size="13.584px" stroke-width=".84902">Q</tspan></text>
+ <g fill="none" stroke="#000">
+  <path d="m42.307 38.426v8.6194" stroke-width=".85"/>
+  <path d="m84.024 43.592v7.1495" stroke-width=".85"/>
+  <path d="m85.444 44.544v5.312" stroke-width=".73267"/>
+  <path d="m86.764 45.53v2.7729" stroke-width=".85"/>
+ </g>
+ <g transform="translate(-2.5513 3.9215)">
+  <text x="57.613216" y="55.618465" font-family="sans-serif" font-size="13.584px" stroke-width=".84902" style="line-height:1.25" xml:space="preserve"><tspan x="57.613216" y="55.618465" stroke-width=".84902">A</tspan></text>
+  <g stroke="#000">
+   <circle cx="69.827" cy="43.22" r=".79596" fill="#fff" stroke-width=".84902"/>
+   <path d="m54.24 43.231 14.148-8.1681" fill="none" stroke-width=".85"/>
+   <circle cx="54.276" cy="43.22" r=".79596" fill="#fff" stroke-width=".84902"/>
+  </g>
+ </g>
+</svg>
