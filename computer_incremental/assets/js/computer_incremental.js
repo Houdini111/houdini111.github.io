@@ -50,37 +50,42 @@ function init_transactions() {
 	let transactions = [];
 	let transistor_transaction = new Transaction(null, null, function () {
 		save_data.transistors++;
-	});
-	transactions.push(transistor_transaction);
-	add_button_hold_transaction('transistor_add_button', transistor_transaction);
-	let not_transaction = new Transaction('not_gates', not_gate_cost, function () {
-		save_data.not_gates++;
 		set_all_for_class('transistor_count', save_data.transistors);
 		check_transistor_costs();
 	});
+	transactions.push(transistor_transaction);
+	add_button_hold_transaction('transistor_add_button', transistor_transaction);
+	let not_transaction = new Transaction('transistors', not_gate_cost, function () {
+		save_data.not_gates++;
+		set_all_for_class('transistor_count', save_data.transistors);
+		set_all_for_class('not_gate_count', save_data.not_gates);
+		check_transistor_costs();
+		check_not_gate_counts();
+	});
 	transactions.push(not_transaction);
-	let and_transaction = new Transaction('and_gates', and_gate_cost, function () {
+	add_button_hold_transaction('not_gate_add_button', not_transaction);
+	let and_transaction = new Transaction('transistors', and_gate_cost, function () {
 		save_data.and_gates++;
 		set_all_for_class('transistor_count', save_data.transistors);
 		set_all_for_class('and_gate_count', save_data.and_gates);
 		check_transistor_costs();
 		check_and_gate_counts();
 	});
-	add_button_hold_transaction('not_gate_add_button', not_transaction);
+	add_button_hold_transaction('and_gate_add_button', and_transaction);
 	transactions.push(and_transaction);
-	let or_transaction = new Transaction('or_gates', or_gate_cost, function () {
+	let or_transaction = new Transaction('transistors', or_gate_cost, function () {
 		save_data.or_gates++;
 		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('or_gate_count', save_data.and_gates);
+		set_all_for_class('or_gate_count', save_data.or_gates);
 		check_transistor_costs();
 		check_or_gate_counts();
 	});
 	add_button_hold_transaction('or_gate_add_button', or_transaction);
 	transactions.push(or_transaction);
-	let xor_transaction = new Transaction('xor_gates', xor_gate_cost, function () {
+	let xor_transaction = new Transaction('transistors', xor_gate_cost, function () {
 		save_data.xor_gates++;
 		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('xor_gate_count', save_data.and_gates);
+		set_all_for_class('xor_gate_count', save_data.xor_gates);
 		check_transistor_costs();
 		check_xor_gate_counts();
 	});
@@ -139,7 +144,11 @@ function update_framerate_info(dt) {
 function add_button_hold_transaction(elemId, transaction) {
 	let elem = document.getElementById(elemId);
 	if (elem) {
-		elem.addEventListener('mousedown', transaction.attempt);
+		elem.addEventListener('mousedown', function (event) {
+			button_hold_click(event, function () {
+				transaction.attempt(save_data);
+			})
+		});
     }
 }
 

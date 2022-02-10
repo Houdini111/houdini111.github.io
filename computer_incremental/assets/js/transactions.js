@@ -1,4 +1,11 @@
 class Transaction {
+    #resources;
+    #costs;
+    #effects;
+    #costsIsArray;
+    #resourcesIsArray;
+    #valid;
+
 	constructor(resources, costs, effects) {
         this.resources = resources;
         this.costs = costs;
@@ -20,12 +27,12 @@ class Transaction {
         if (!this.canComplete(save_data)) {
             return false;
         } else {
-            this.doTransaction(save_data);
+            this.takeCost(save_data);
             this.doEffects(save_data);
         }
     }
 
-    doTransaction(save_data) {
+    takeCost(save_data) {
         if (!this.resources && !this.costs) {
             return;
         } else if (this.resourcesIsArray) {
@@ -46,7 +53,7 @@ class Transaction {
         if (!this.valid) {
             return false;
         }
-        else if (!this.resources && !this.costs) {
+        else if (this.resources == null && this.costs == null) {
             //No cost
             return true;
         }
@@ -84,7 +91,7 @@ class Transaction {
     }
 
     getNestedPropertyValue(obj, propertyList) {
-        if (!!propertyList) {
+        if (propertyList == null) {
             return null;
         } else if (!Array.isArray(propertyList)) {
             return obj[propertyList];
@@ -99,7 +106,7 @@ class Transaction {
     }
 
     subtractNestedResource(obj, propertyList, cost) {
-        if (!!propertyList) {
+        if (propertyList == null) {
             return;
         } else if (!Array.isArray(propertyList)) {
             obj[propertyList] -= cost;
