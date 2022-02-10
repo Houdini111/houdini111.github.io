@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Computer Incremental</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="computer_incremental.css">
+		<link rel="stylesheet" href="svg_styles.css">
+	</head>
+	<body>
+		<script type="text/javascript" src="computer_incremental.js"> </script>
+		
+		<div id="game">
+			<table>
+				<tr>
+					<td>
+						<table class="formatted_table">
+							<colgroup>
+								<col class="tableNameColumn">
+								<col class="tableCountColumn">
+								<col class="tableAddButtonColumn">
+								<col class="tableResultCountColumn">
+								<col class="illustrationExpandoButtonColumn">
+							</colgroup>
+							<tr>
+								<td>
+									Transistors
+								</td>
+								<td></td>
+								<td>
+									<button id="transistor_add_button" onmousedown="button_hold_click.call(this, event, transistor_add)">+1</button>
+								</td>
+								<td>
+									<span class="transistor_count"></span>
+								</td>
+								<td>
+									
+								</td>
+							</tr>
+						</table>
+						<table class="formatted_table">
+							<colgroup>
+								<col class="tableNameColumn">
+								<col class="tableCountColumn">
+								<col class="tableAddButtonColumn">
+								<col class="tableResultCountColumn">
+								<col class="illustrationExpandoButtonColumn">
+							</colgroup>
+							<tr>
+								<td>
+									NOT Gates
+								</td>
+								<td>
+									<span class="transistor_count"></span>/<span class="not_gate_cost"></span>
+								</td>
+								<td>
+									<button id="not_gate_add_button" onmousedown="button_hold_click.call(this, event, not_gate_add)">+1</button>
+								</td>
+								<td>
+									<span class="not_gate_count"></span>
+								</td>
+								<td>
+									<span class="arrow-right"> </span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									AND Gates
+								</td>
+								<td>
+									<span class="transistor_count"></span>/<span class="and_gate_cost"></span>
+								</td>
+								<td>
+									<button id="and_gate_add_button" onmousedown="button_hold_click.call(this, event, and_gate_add)">+1</button>
+								</td>
+								<td>
+									<span class="and_gate_count"></span>
+								</td>
+								<td>
+									<span class="arrow-right"> </span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									OR Gates
+								</td>
+								<td>
+									<span class="transistor_count"></span>/<span class="or_gate_cost"></span>
+								</td>
+								<td>
+									<button id="or_gate_add_button" onmousedown="button_hold_click.call(this, event, or_gate_add)">+1</button>
+								</td>
+								<td>
+									<span class="or_gate_count"></span>
+								</td>
+								<td>
+									<span class="arrow-right"> </span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									XOR Gates
+								</td>
+								<td>
+									<span class="transistor_count"></span>/<span class="xor_gate_cost"></span>
+								</td>
+								<td>
+									<button id="xor_gate_add_button" onmousedown="button_hold_click.call(this, event, xor_gate_add)">+1</button>
+								</td>
+								<td>
+									<span class="xor_gate_count"></span>
+								</td>
+								<td>
+									<span class="arrow-right"> </span>
+								</td>
+							</tr>
+						</table>
+					<td>
+					<td class="illustration_table_parent">
+						<table class="formatted_table illustration_table">
+							<tr>
+								<td>
+									<div id="svgContainer">
+										<!--
+										<svg id="embededSvg" xmlns="http://www.w3.org/2000/svg">
+											<circle r="50" cx="50" cy="50" fill="green"/>
+										</svg>
+										-->
+									</div>
+								
+									<!--
+									<img src="and_gate.svg" />
+									-->
+									
+									<!--
+									<iframe id="illustrationObj" src="and_gate_optimized.svg">
+									</iframe>
+									-->
+									
+									<!--
+									<object id="illustrationObj" type="image/svg+xml" data="and_gate_optimized.svg">
+									<script>
+									debugger;
+										console.log('inside the object');
+									</script>
+									</object>
+									-->
+									
+									<!--
+									<svg xmlns="http://www.w3.org/2000/svg">
+										<image xlink:href="and_gate.svg"/>    
+									</svg>
+									-->
+									<!--
+									<svg width="100mm" height="100mm" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+									
+									<defs id="defs6">
+										<filter filterUnits="objectBoundingBox" id="invert" x="0" y="0" height="1" width="1">
+										  <feComponentTransfer>
+											  <feFuncA type="table" tableValues="1 0"/>
+										  </feComponentTransfer>
+										</filter>
+									</defs>
+									
+										<metadata>
+										<rdf:RDF>
+										<cc:Work rdf:about="">
+										<dc:format>image/svg+xml</dc:format>
+										<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+										<dc:title/>
+										</cc:Work>
+										</rdf:RDF>
+										</metadata>
+										<path d="m67.563 44.318h27.592" fill="none" stroke="#000" stroke-width=".85"/>
+										<path d="m24.411 44.376h-10.889" fill="none" stroke="#000" stroke-width=".85"/>
+										<g aria-label="+">
+										<path d="m10.938 44.053h-3.615v3.615h-1.1011v-3.615h-3.615v-1.0613h3.615v-3.615h1.1011v3.615h3.615z" stroke-width=".84902"/>
+										</g>
+										<g aria-label="Q">
+										<path d="m91.027 33.896q-0.39798 0.09949-0.78932 0.13929-0.38471 0.04643-0.78932 0.04643-1.1541 0-1.8572-0.63676-0.69646-0.63013-0.75616-1.8108-0.15919 0.02653-0.31175 0.03317-0.14592 0.01327-0.28522 0.01327-1.0414 0-1.897-0.34491-0.84902-0.34491-1.446-1.0016t-0.92198-1.6118q-0.31838-0.95515-0.31838-2.1822 0-1.2072 0.31838-2.1623 0.31838-0.96178 0.92861-1.645 0.5837-0.65003 1.446-0.99494 0.86892-0.34491 1.8904-0.34491 1.0613 0 1.9037 0.35155 0.84902 0.34491 1.4394 0.98831 0.6036 0.6633 0.92198 1.6251 0.32502 0.96178 0.32502 2.1822 0 1.8108-0.74289 3.0512-0.73626 1.2404-1.9833 1.7378 0.02653 0.75616 0.35818 1.174 0.33165 0.41788 1.2072 0.41788 0.27195 0 0.6434-0.08623 0.37808-0.07959 0.53727-0.14592h0.17909zm-1.5654-7.356q0-1.9236-0.86228-2.9649-0.86228-1.048-2.3547-1.048-1.5057 0-2.368 1.048-0.85565 1.0414-0.85565 2.9649 0 1.9435 0.87555 2.9782 0.87555 1.0281 2.3481 1.0281t2.3414-1.0281q0.87555-1.0347 0.87555-2.9782z" stroke-width=".84902"/>
+										</g>
+										<g fill="none" stroke="#000">
+										<path d="m86.152 35.591v8.6194" stroke-width=".85"/>
+										<path d="m95.24 40.669v7.1495" stroke-width=".85"/>
+										<path d="m96.66 41.621v5.312" stroke-width=".73267"/>
+										<path d="m97.979 42.607v2.7729" stroke-width=".85"/>
+										<path d="m40.015 44.344h11.994" stroke-width=".85"/>
+										</g>
+										<g transform="translate(-29.829 1.1454)">
+										<g stroke-width=".84902" aria-label="A">
+										<path d="m66.727 55.618h-1.3996l-0.96841-2.7527h-4.2716l-0.96841 2.7527h-1.3332l3.5951-9.8765h1.7511zm-2.7726-3.8803-1.7312-4.8487-1.7378 4.8487z" stroke-width=".84902"/>
+										</g>
+										<g stroke="#000">
+										<path d="m70.622 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
+										<path d="m54.24 43.231 14.148-8.1681" fill="none" stroke-width=".85"/>
+										<path d="m55.072 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
+										</g>
+										</g>
+										<g transform="translate(-2.2308 1.1128)">
+										<g stroke-width=".84902" aria-label="B">
+										<path d="m66.389 52.581q0 0.73626-0.27858 1.3001-0.27858 0.5638-0.74952 0.92861-0.55717 0.43778-1.2271 0.6235-0.6633 0.18572-1.6914 0.18572h-3.5022v-9.8765h2.9251q1.0812 0 1.6184 0.0796 0.53727 0.07959 1.0281 0.33165 0.5439 0.28522 0.78932 0.73626 0.24542 0.44441 0.24542 1.0679 0 0.70309-0.35818 1.2006-0.35818 0.49084-0.95515 0.78932v0.05306q1.0016 0.20562 1.5786 0.88218 0.57707 0.66993 0.57707 1.698zm-2.2088-4.4507q0-0.35818-0.11939-0.6036-0.11939-0.24542-0.38471-0.39798-0.31175-0.17909-0.75616-0.21889-0.44441-0.04643-1.1011-0.04643h-1.5654v2.8522h1.698q0.61686 0 0.98168-0.0597 0.36481-0.06633 0.67656-0.26532 0.31175-0.19899 0.43778-0.51074 0.13266-0.31838 0.13266-0.74952zm0.84239 4.5038q0-0.59697-0.17909-0.94851t-0.65003-0.59697q-0.31838-0.16582-0.77606-0.21225-0.45104-0.05306-1.1011-0.05306h-2.0628v3.6747h1.7378q0.86228 0 1.4128-0.08623 0.55054-0.09286 0.90208-0.33165 0.37145-0.25868 0.5439-0.59033t0.17246-0.85565z" stroke-width=".84902"/>
+										</g>
+										<g stroke="#000">
+										<path d="m70.622 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
+										<path d="m54.24 43.231 14.148-8.1681" fill="none" stroke-width=".85"/>
+										<path d="m55.072 43.22a0.79596 0.79596 0 0 1-0.79596 0.79596 0.79596 0.79596 0 0 1-0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596-0.79596 0.79596 0.79596 0 0 1 0.79596 0.79596z" fill="#fff" stroke-width=".84902"/>
+										</g>
+										</g>
+									</svg>
+									-->
+								</td>
+							</tr>
+						<table>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="debug_info">
+			<div id="framerate_info"> </div>
+			<div id="frametime_info"> </div>
+		</div>
+	</body>
+</html>

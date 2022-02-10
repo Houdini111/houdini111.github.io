@@ -1,5 +1,5 @@
 :root {
-	--table-spacing: 5px
+	--table-spacing: 100px
 }
 
 body {
@@ -21,9 +21,14 @@ h1 {
 	margin-right: auto;
 }
 
+#calendar_body tr {
+	margin-bottom: var(--table-spacing);
+}
+
 #calendar_body td {
 	width: calc( (100% - (var(--table-spacing) / 55)) / 55);
 	position: relative;
+	margin-right: var(--table-spacing);
 }
 
 #calendar_body td:after {
@@ -52,11 +57,6 @@ h1 {
 .future_day {
 	background: transparent;
 	border: 1px solid white;
-}
-
-#calendar_body, #calendar_body th, #calendar_body td {
-	border: 1px solid transparent;
-	border-spacing: var(--table-spacing);
 }
 
 
@@ -128,4 +128,18 @@ h1 {
     -ms-transform: translate(50%, -50%);
     -o-transform: translate(50%, -50%);
     transform: translate(50%, -50%);
+}
+
+.tooltip {
+	display: none;
+	
+	background: #000000;
+	position: absolute;
+	z-index: 100;
+	padding: 10px;
+	//height: 20px;
+}
+
+.content:hover .tooltip {
+	display: block;
 }

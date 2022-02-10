@@ -1,0 +1,114 @@
+body {
+	background-color: #222;
+	color: #DDD;
+}
+
+button {
+	//background-color: #777;
+	border: none;
+	color: #DDD;
+	padding: 5px 10px;
+	cursor: pointer;
+	
+	background: linear-gradient(to right, #777 50%, #333 50%);
+	background-size: 200% 100%;
+	background-position: 0%;
+}
+
+/*
+button.clicked {
+	background-position: left;
+	color: #fff;
+	transition: all .35s ease-out;
+}
+*/
+
+button.disabled {
+	cursor: not-allowed;
+	background: none;
+	transition: none;
+	background-color: #444;
+	cursor: not-allowed;
+}
+
+#debug_info {
+	color: red;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.formatted_table {
+	//border-spacing: 10px;
+	border: 1px solid #DDD;
+	border-collapse: collapse;
+}
+
+.formatted_table td {
+	padding: 5px 10px;
+}
+
+.illustration_table_parent {
+	height: 100%;
+}
+
+.illustration_table {
+	height: 100%;
+	border: 1px solid #DDD;
+	border-collapse: collapse;
+}
+
+.illustration_table td {
+	border: none;
+}
+
+.illustration_table object body svg, .illustration_table object body svg path {
+	stroke: white;
+	fill: white;
+}
+
+.tableNameColumn {
+	width: 15rem;
+	text-align: left;
+}
+
+.tableCountColumn {
+	width: 5rem;
+	text-align: center;
+}
+
+.tableAddButtonColumn {
+	width: 5rem;
+	margin: auto;
+}
+
+.tableResultCountColumn {
+	width: 5rem;
+	text-align: center;
+}
+
+.illustrationExpandoButtonColumn {
+	width: 3rem;
+}
+
+.arrow-right {
+	/* .arrow(270,50px,2px,#fff); */
+	display:block;
+	position:relative;
+	
+	width: 10px;
+	height: 10px;
+	margin: 5px;
+	-webkit-transform: rotate(315deg);
+	-moz-transform: rotate(315deg);
+	transform: rotate(315deg);
+	-o-transform: rotate(315deg);
+	border-right: solid;
+	border-bottom: solid;
+	
+	border-color: #BBB;
+}
+
+.arrow-right:hover {
+	border-color: #FFF;
+}

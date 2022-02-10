@@ -9,6 +9,7 @@ const special_days = [
 let annoucement_moment
 let start;
 let today;
+let tooltips = [];
 
 window.onload = function() {
 	annoucement_moment = moment("2019-06-10", "YYYY-MM-DD");
@@ -47,20 +48,15 @@ window.onload = function() {
 }
 
 function createCell(day, special_days, empty = false) {
-
+	const thisDay = start.clone().add(day, "days");
+	const diff = today.diff(thisDay, "days");
+		
 	let newCell = document.createElement("td");
 	let cellContents = document.createElement("div");
 	cellContents.classList.add("content");
-	let date = document.createElement("input");
-	date.value = start.clone().add(day, 'days').format("YYYY-MM-DD");
-	date.type = "hidden";
-	cellContents.appendChild(date);
 	
 	if(!empty) {
-		const thisDay = start.clone().add(day, "days");
-		const diff = today.diff(thisDay, "days");
 		if (diff === 0) {
-			debugger;
 			cellContents.classList.add("today");
 		}
 		else if (diff < 0) {
@@ -73,7 +69,19 @@ function createCell(day, special_days, empty = false) {
 			cellContents.id = special[0].id;
 			cellContents.addEventListener('mouseover', specialHover);
 		} else {
-			cellContents.addEventListener('mouseover', regularHover);
+			//cellContents.addEventListener('mouseover', regularHover);
+			cellContents.addEventListener('mousemove', basicTooltip, false);
+			let tooltip = document.createElement("div");
+			let format = "MMM DD YYYY [(" + diff + " days ago)]";
+			if (diff < 0) {
+				format = "MMM DD YYYY [(" + (diff * -1) + " days from now)]";
+			} else if (diff === 0) {
+				format = "MMM DD YYYY [(today)]";
+			}
+			tooltip.classList.add("tooltip");
+			tooltip.innerText = start.clone().add(day, 'days').format(format);
+			cellContents.appendChild(tooltip);
+			tooltips.push(tooltip);
 		}
 	}
 	
@@ -82,17 +90,13 @@ function createCell(day, special_days, empty = false) {
 	return newCell;
 }
 
-function regularHover(event) {
-	let children = event.currentTarget.querySelector(".hover");
-	if(!!children) { return; }
-	
-	/*
-	let hoverView = document.createElement("div");
-	hoverView.style.backgroundImage = window.getComputedStyle(event.currentTarget).getPropertyValue("background-image");
-	hoverView.classList.add("hover");
-	hoverView.addEventListener('mouseout', specialOut);
-	event.currentTarget.appendChild(hoverView);
-	*/
+function basicTooltip(event) {
+	for (const tooltip of tooltips) {
+		let rect = tooltip.parentElement.getBoundingClientRect();
+		
+        tooltip.style.left = (event.pageX - rect.left) + 'px';
+        tooltip.style.top = (event.pageY - rect.top) + 'px';
+    }
 }
 
 function specialHover(event) {

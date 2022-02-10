@@ -1,0 +1,4 @@
+NAND Superiority
+K-Maps 
+
+Creating the gates required for a boolean equation
