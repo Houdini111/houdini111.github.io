@@ -88,8 +88,9 @@ function load_svg(file_name) {
 		xhr.overrideMimeType('image/svg+xml');
 		xhr.onload = function(e) {
 		  // You might also want to check for xhr.readyState/xhr.status here
-		  document.getElementById('svgContainer')
-			.innerHTML = xhr.responseXML.documentElement;
+		  let container = document.getElementById('svgContainer');
+		  container.innerHTML = '';
+		  container.appendChild(xhr.responseXML.documentElement);
 		};
 		xhr.send("");
 	}
