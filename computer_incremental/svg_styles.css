@@ -1,4 +1,8 @@
 svg * {
-	fill: white;
+	fill: none;
 	stroke: white;
+}
+
+svg .fill_this {
+	fill: white;
 }
