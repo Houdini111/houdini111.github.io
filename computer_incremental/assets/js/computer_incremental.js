@@ -27,8 +27,6 @@ function init() {
 		earlyEndTransitions(EarlyEndEvents.MouseUp);
 	});
 
-	init_transactions();
-	
 	previous_update_time = now_ms();
 	
 	load();
@@ -43,33 +41,29 @@ function load() {
 	}
 	load_fixed_data_to_ui();
 	load_data_to_ui();
+	init_transactions();
 	setup_next_main();
 }
 
 function init_transactions() {
-	//TODO: Automate the setting of resource values and the cost check for resulting resources
-	transactionMaster = new TransactionMaster();
-	transactionMaster.create_transaction('transistor_add_button', null, null, function () {
-		save_data.transistors++;
+	//TODO: Automate the setting of resource values in the UI
+	transactionMaster = new TransactionMaster(save_data);
+	transactionMaster.add_transaction('transistor_add_button', null, [['transistors', 1]], function () {
 		set_all_for_class('transistor_count', save_data.transistors);
 	});
-	transactionMaster.create_transaction('not_gate_add_button', 'transistors', not_gate_cost, function () {
-		save_data.not_gates++;
+	transactionMaster.add_transaction('not_gate_add_button', [['transistors', not_gate_cost]], [['not_gates', 1]], function () {
 		set_all_for_class('transistor_count', save_data.transistors);
 		set_all_for_class('not_gate_count', save_data.not_gates);
 	});
-	transactionMaster.create_transaction('and_gate_add_button', 'transistors', and_gate_cost, function () {
-		save_data.and_gates++;
+	transactionMaster.add_transaction('and_gate_add_button', [['transistors', and_gate_cost]], [['and_gates', 1]], function () {
 		set_all_for_class('transistor_count', save_data.transistors);
 		set_all_for_class('and_gate_count', save_data.and_gates);
 	});
-	transactionMaster.create_transaction('or_gate_add_button', 'transistors', or_gate_cost, function () {
-		save_data.or_gates++;
+	transactionMaster.add_transaction('or_gate_add_button', [['transistors', or_gate_cost]], [['or_gates', 1]], function () {
 		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('or_gate_count', save_data.and_gates);
+		set_all_for_class('or_gate_count', save_data.or_gates);
 	});
-	transactionMaster.create_transaction('xor_gate_add_button', 'transistors', xor_gate_cost, function () {
-		save_data.xor_gates++;
+	transactionMaster.add_transaction('xor_gate_add_button', [['transistors', xor_gate_cost]], [['xor_gates', 1]], function () {
 		set_all_for_class('transistor_count', save_data.transistors);
 		set_all_for_class('xor_gate_count', save_data.xor_gates);
 	});

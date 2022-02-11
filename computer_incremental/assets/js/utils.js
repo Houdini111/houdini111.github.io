@@ -4,12 +4,12 @@ function lerp(start, end, amount) {
 	return ((1 - amount) * start) + (amount * end);
 }
 
-function setDisabled(elem, disable) {
-	if (disable) {
-		elem.classList.add('disabled');
-	} else {
-		elem.classList.remove('disabled');
-	}
+function setDisabled(elem) {
+	elem.classList.add('disabled');
+}
+
+function setEnabled(elem) {
+	elem.classList.remove('disabled');
 }
 
 function isDisabled(elem) {
