@@ -15,23 +15,32 @@ class ResourceUpdater {
         }
     }
 
+    updateAllResources(save_data) {
+        for (let mapping of this.mappings) {
+            let valueForResource = save_data.getResourceFromPath(mapping.resourcePath);
+            mapping.updateValues(valueForResource);
+        }
+    }
+
     updateResources(resources, save_data) {
         if (resources == null) {
             return;
         }
         if (!Array.isArray(resources)) {
-            resources = [resources];
+            updateResource(resources, save_data);
         }
         for (let resource of resources) {
-            let mappingForResource = this.mappings.get(resource);
-            if (mappingForResource == null) {
-                continue;
-            }
-            let valueForResource = save_data.getResourceFromPath(resource);
-            for (let mappedClass of mappingForResource.elementClasses) {
-                set_all_for_class(mappedClass, valueForResource);
-            }
+            this.updateResource(resource, save_data);
         }
+    }
+
+    updateResource(resource, save_data) {
+        let mappingForResource = this.mappings.get(resource);
+        if (mappingForResource == null) {
+            continue;
+        }
+        let valueForResource = save_data.getResourceFromPath(resource);
+        mapping.updateValues(valueForResource);
     }
 }
 
@@ -49,5 +58,11 @@ class ResourceMapping {
 
     addClassToMapping(elementClass) {
         this.elementClasses.push(elementClass);
+    }
+
+    updateValues(value) {
+        for (let mappedClass of this.elementClasses) {
+            set_all_for_class(mappedClass, value);
+        }
     }
 }

@@ -41,9 +41,9 @@ function load() {
 		save_data = new SaveData();
 	}
 	load_fixed_data_to_ui();
-	load_data_to_ui();
 	init_mappings();
 	init_transactions();
+	resourceUpdater.updateAllResources(save_data);
 	setup_next_main();
 }
 
@@ -57,7 +57,6 @@ function init_mappings() {
 }
 
 function init_transactions() {
-	//TODO: Automate the setting of resource values in the UI
 	transactionMaster = new TransactionMaster(save_data, resourceUpdater);
 	transactionMaster.add_transaction('transistor_add_button', null, [['transistors', 1]], null);
 	transactionMaster.add_transaction('not_gate_add_button', [['transistors', not_gate_cost]], [['not_gates', 1]], null);
@@ -71,11 +70,6 @@ function load_fixed_data_to_ui() {
 	set_all_for_class('and_gate_cost', and_gate_cost);
 	set_all_for_class('or_gate_cost', or_gate_cost);
 	set_all_for_class('xor_gate_cost', xor_gate_cost);
-}
-
-function load_data_to_ui() {
-	set_all_for_class('transistor_count', save_data.transistors);
-	check_transistor_costs();
 }
 
 function main() {
@@ -111,27 +105,4 @@ function button_hold_click(event, method) {
 		if (method) { method(); } 
 		button_hold_click(event, method); 
 	}, EarlyEndEvents.MouseUp ));
-}
-
-function check_transistor_costs() {
-	setDisabled(document.getElementById('not_gate_add_button'), save_data.transistors < not_gate_cost);
-	setDisabled(document.getElementById('and_gate_add_button'), save_data.transistors < and_gate_cost);
-	setDisabled(document.getElementById('or_gate_add_button'), save_data.transistors < or_gate_cost);
-	setDisabled(document.getElementById('xor_gate_add_button'), save_data.transistors < xor_gate_cost);
-}
-
-function check_not_gate_counts() {
-	
-}
-
-function check_and_gate_counts() {
-	
-}
-
-function check_or_gate_counts() {
-	
-}
-
-function check_xor_gate_counts() {
-	
 }
