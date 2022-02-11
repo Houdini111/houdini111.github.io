@@ -12,12 +12,41 @@ function setDisabled(elem, disable) {
 	}
 }
 
+function isDisabled(elem) {
+	return elem.classList.contains('disabled');
+}
+
 function now_ms() {
 	return new Date().getTime();
 }
 
 function average_arr(array) {
 	return array.reduce((a, b) => a + b) / array.length;
+}
+
+function safe_push(obj, key, value) {
+	let arr = obj[key];
+	if (arr == null) {
+		arr = [];
+		obj[key] = arr;
+	}
+	arr.push(value);
+}
+
+function getNestedPropertyValue(obj, propertyList) {
+	let propertyListCopy = [...propertyList];
+	if (propertyListCopy == null) {
+		return null;
+	} else if (!Array.isArray(propertyListCopy)) {
+		return obj[propertyListCopy];
+	} else {
+		let nextProperty = propertyListCopy.shift();
+		if (propertyListCopy.length == 0) {
+			return obj[nextProperty];
+		} else {
+			return this.getNestedPropertyValue(obj[nextProperty], propertyListCopy);
+		}
+	}
 }
 
 //from https://stackoverflow.com/a/10091011
