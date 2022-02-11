@@ -16,6 +16,15 @@ function isDisabled(elem) {
 	return elem.classList.contains('disabled');
 }
 
+function set_all_for_class(className, value) {
+	const elems = document.getElementsByClassName(className);
+	if (elems) {
+		for (const elem of elems) {
+			elem.innerHTML = value;
+		}
+	}
+}
+
 function now_ms() {
 	return new Date().getTime();
 }

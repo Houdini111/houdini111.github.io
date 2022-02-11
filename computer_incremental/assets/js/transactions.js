@@ -1,10 +1,12 @@
 class TransactionMaster {
     save_data;
+    resourceUpdater;
     transactions;
     cost_to_transaction_map;
 
-    constructor(save_data) {
+    constructor(save_data, resourceUpdater) {
         this.save_data = save_data;
+        this.resourceUpdater = resourceUpdater;
         this.transactions = [];
         this.cost_to_transaction_map = new Map();
     }
@@ -29,13 +31,20 @@ class TransactionMaster {
         transactions_for_resource_cost.push(transaction);
     }
 
-    add_button_hold_transaction(transaction) {
-        if (transaction.button) {
+    add_button_hold_transaction(transactionParam) {
+        if (transactionParam.button) {
             const transactionMaster = this;
+            const transaction = transactionParam;
             transaction.button.addEventListener('mousedown', function (event) {
                 button_hold_click(event, function () {
                     let success = transaction.attemptComplete(transactionMaster.save_data);
                     if (success) {
+                        if (transaction.costs != null) {
+                            resourceUpdater.updateResources(transaction.costs.map(function (cost) { return cost.path }), transactionMaster.save_data);
+                        }
+                        if (transaction.results != null) {
+                            resourceUpdater.updateResources(transaction.results.map(function (result) { return result.path }), transactionMaster.save_data);
+                        }
                         transactionMaster.do_resource_checks(transaction);
                     }
                 })

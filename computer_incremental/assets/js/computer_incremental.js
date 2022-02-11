@@ -10,6 +10,7 @@ let previous_update_time;
 let save_data;
 let transitionings = [];
 let transactionMaster;
+let resourceUpdater;
 
 
 window.onload = function() {
@@ -41,32 +42,28 @@ function load() {
 	}
 	load_fixed_data_to_ui();
 	load_data_to_ui();
+	init_mappings();
 	init_transactions();
 	setup_next_main();
 }
 
+function init_mappings() {
+	resourceUpdater = new ResourceUpdater();
+	resourceUpdater.addMapping('transistors', 'transistor_count');
+	resourceUpdater.addMapping('not_gates', 'not_gate_count');
+	resourceUpdater.addMapping('and_gates', 'and_gate_count');
+	resourceUpdater.addMapping('or_gates', 'or_gates');
+	resourceUpdater.addMapping('xor_gates', 'xor_gates');
+}
+
 function init_transactions() {
 	//TODO: Automate the setting of resource values in the UI
-	transactionMaster = new TransactionMaster(save_data);
-	transactionMaster.add_transaction('transistor_add_button', null, [['transistors', 1]], function () {
-		set_all_for_class('transistor_count', save_data.transistors);
-	});
-	transactionMaster.add_transaction('not_gate_add_button', [['transistors', not_gate_cost]], [['not_gates', 1]], function () {
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('not_gate_count', save_data.not_gates);
-	});
-	transactionMaster.add_transaction('and_gate_add_button', [['transistors', and_gate_cost]], [['and_gates', 1]], function () {
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('and_gate_count', save_data.and_gates);
-	});
-	transactionMaster.add_transaction('or_gate_add_button', [['transistors', or_gate_cost]], [['or_gates', 1]], function () {
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('or_gate_count', save_data.or_gates);
-	});
-	transactionMaster.add_transaction('xor_gate_add_button', [['transistors', xor_gate_cost]], [['xor_gates', 1]], function () {
-		set_all_for_class('transistor_count', save_data.transistors);
-		set_all_for_class('xor_gate_count', save_data.xor_gates);
-	});
+	transactionMaster = new TransactionMaster(save_data, resourceUpdater);
+	transactionMaster.add_transaction('transistor_add_button', null, [['transistors', 1]], null);
+	transactionMaster.add_transaction('not_gate_add_button', [['transistors', not_gate_cost]], [['not_gates', 1]], null);
+	transactionMaster.add_transaction('and_gate_add_button', [['transistors', and_gate_cost]], [['and_gates', 1]], null);
+	transactionMaster.add_transaction('or_gate_add_button', [['transistors', or_gate_cost]], [['or_gates', 1]], null);
+	transactionMaster.add_transaction('xor_gate_add_button', [['transistors', xor_gate_cost]], [['xor_gates', 1]], null);
 }
 
 function load_fixed_data_to_ui() {
@@ -79,15 +76,6 @@ function load_fixed_data_to_ui() {
 function load_data_to_ui() {
 	set_all_for_class('transistor_count', save_data.transistors);
 	check_transistor_costs();
-}
-
-function set_all_for_class(className, value) {
-	const elems = document.getElementsByClassName(className);
-	if (elems) {
-		for (const elem of elems) {
-			elem.innerHTML = value;
-		}
-	}
 }
 
 function main() {
