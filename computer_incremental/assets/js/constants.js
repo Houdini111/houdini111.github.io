@@ -1,3 +1,4 @@
+const basic_gate_cost = 20;
 const not_gate_cost = 1;
 const and_gate_cost = 2;
 const or_gate_cost = 2;

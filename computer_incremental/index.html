@@ -12,37 +12,57 @@
 		<script type="text/javascript" src="assets/js/constants.js"></script>
 		<script type="text/javascript" src="assets/js/svg.js"></script>
 		<script type="text/javascript" src="assets/js/resource_updater.js"></script>
+		<script type="text/javascript" src="assets/js/unlock_master.js"></script>
 		<script type="text/javascript" src="assets/js/transitions.js"></script>
 		<script type="text/javascript" src="assets/js/transactions.js"></script>
 		<script type="text/javascript" src="assets/js/computer_incremental.js"></script>
 
 		<div id="game">
 			<table>
-				<tr>
+				<tr id="tier_row_0" class="tier_row">
 					<td>
-						<table class="formatted_table">
-							<colgroup>
-								<col class="tableNameColumn">
-								<col class="tableCountColumn">
-								<col class="tableAddButtonColumn">
-								<col class="tableResultCountColumn">
-								<col class="illustrationExpandoButtonColumn">
-							</colgroup>
+						<table>
 							<tr>
 								<td>
 									Transistors
 								</td>
-								<td></td>
+							</tr>
+							<tr>
 								<td>
 									<button id="transistor_add_button">+1</button>
 								</td>
+							</tr>
+							<tr>
 								<td>
 									<span class="transistor_count"></span>
 								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr id="tier_row_0.5" class="tier_row hidden_row">
+					<td>
+						<table>
+							<tr>
 								<td>
+									Unlock Logic Gates
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="transistor_count"></span>/<span class="basic_gate_cost"></span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<button id="basic_gate_unlock_button">Unlock</button>
 								</td>
 							</tr>
 						</table>
+					</td>
+				</tr>
+				<tr id="tier_row_1" class="tier_row hidden_row">
+					<td>
 						<table class="formatted_table">
 							<colgroup>
 								<col class="tableNameColumn">
@@ -129,7 +149,7 @@
 									</div>
 								</td>
 							</tr>
-							<table>
+						</table>
 					</td>
 				</tr>
 			</table>

@@ -16,6 +16,14 @@ function isDisabled(elem) {
 	return elem.classList.contains('disabled');
 }
 
+function hideTierRow(id) {
+	document.getElementById(id).classList.add('hidden_row');
+}
+
+function unhideTierRow(id) {
+	document.getElementById(id).classList.remove('hidden_row');
+}
+
 function set_all_for_class(className, value) {
 	const elems = document.getElementsByClassName(className);
 	if (elems) {

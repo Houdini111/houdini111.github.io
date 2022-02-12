@@ -1,12 +1,14 @@
 class TransactionMaster {
     save_data;
     resourceUpdater;
+    unlockMaster;
     transactions;
     cost_to_transaction_map;
 
-    constructor(save_data, resourceUpdater) {
+    constructor(save_data, resourceUpdater, unlockMaster) {
         this.save_data = save_data;
         this.resourceUpdater = resourceUpdater;
+        this.unlockMaster = unlockMaster;
         this.transactions = [];
         this.cost_to_transaction_map = new Map();
     }
@@ -37,19 +39,28 @@ class TransactionMaster {
             const transaction = transactionParam;
             transaction.button.addEventListener('mousedown', function (event) {
                 button_hold_click(event, function () {
-                    let success = transaction.attemptComplete(transactionMaster.save_data);
-                    if (success) {
-                        if (transaction.costs != null) {
-                            resourceUpdater.updateResources(transaction.costs.map(function (cost) { return cost.path }), transactionMaster.save_data);
-                        }
-                        if (transaction.results != null) {
-                            resourceUpdater.updateResources(transaction.results.map(function (result) { return result.path }), transactionMaster.save_data);
-                        }
-                        transactionMaster.do_resource_checks(transaction);
-                    }
+                    transactionMaster.attemptTransaction(transaction);
                 })
             });
         }
+    }
+
+    attemptTransaction(transaction) {
+        let success = transaction.attemptComplete(this.save_data);
+        if (!success) {
+            return;
+        }
+        if (transaction.costs != null) {
+            let costPaths = transaction.costs.map(function (cost) { return cost.path });
+            this.resourceUpdater.updateResources(costPaths, this.save_data);
+            this.unlockMaster.attemptUnlocksForResources(costPaths, this.save_data);
+        }
+        if (transaction.results != null) {
+            let resultPaths = transaction.results.map(function (result) { return result.path });
+            this.resourceUpdater.updateResources(resultPaths, this.save_data);
+            this.unlockMaster.attemptUnlocksForResources(resultPaths, this.save_data);
+        }
+        this.do_resource_checks(transaction);
     }
 
     do_resource_checks(transaction) {

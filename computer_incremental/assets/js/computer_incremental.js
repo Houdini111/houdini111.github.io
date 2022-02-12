@@ -10,6 +10,7 @@ let previous_update_time;
 let save_data;
 let transitionings = [];
 let transactionMaster;
+let unlockMaster;
 let resourceUpdater;
 
 
@@ -42,6 +43,8 @@ function load() {
 	}
 	load_fixed_data_to_ui();
 	init_mappings();
+	init_unlocks();
+	unlockMaster.load(save_data);
 	init_transactions();
 	resourceUpdater.updateAllResources(save_data);
 	setup_next_main();
@@ -56,9 +59,20 @@ function init_mappings() {
 	resourceUpdater.addMapping('xor_gates', 'xor_gate_count');
 }
 
+function init_unlocks() {
+	unlockMaster = new UnlockMaster();
+	unlockMaster.addUnlock([['transistors', 10]], function () {
+		unhideTierRow('tier_row_0.5');
+	});
+}
+
 function init_transactions() {
-	transactionMaster = new TransactionMaster(save_data, resourceUpdater);
+	transactionMaster = new TransactionMaster(save_data, resourceUpdater, unlockMaster);
 	transactionMaster.add_transaction('transistor_add_button', null, [['transistors', 1]], null);
+	transactionMaster.add_transaction('basic_gate_unlock_button', [['transistors', 20]], null, function() {
+		hideTierRow('tier_row_0.5');
+		unhideTierRow('tier_row_1');
+	});
 	transactionMaster.add_transaction('not_gate_add_button', [['transistors', not_gate_cost]], [['not_gates', 1]], null);
 	transactionMaster.add_transaction('and_gate_add_button', [['transistors', and_gate_cost]], [['and_gates', 1]], null);
 	transactionMaster.add_transaction('or_gate_add_button', [['transistors', or_gate_cost]], [['or_gates', 1]], null);
@@ -66,6 +80,7 @@ function init_transactions() {
 }
 
 function load_fixed_data_to_ui() {
+	set_all_for_class('basic_gate_cost', basic_gate_cost);
 	set_all_for_class('not_gate_cost', not_gate_cost);
 	set_all_for_class('and_gate_cost', and_gate_cost);
 	set_all_for_class('or_gate_cost', or_gate_cost);

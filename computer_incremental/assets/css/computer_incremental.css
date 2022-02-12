@@ -1,6 +1,10 @@
 body {
 	background-color: #222;
 	color: #DDD;
+	-webkit-user-select: none; /* Chrome all / Safari all */
+	-moz-user-select: none; /* Firefox all */
+	-ms-user-select: none; /* IE 10+ */
+	user-select: none;
 }
 
 button {
@@ -38,8 +42,36 @@ button.disabled {
 	right: 0;
 }
 
+#game, #game table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+#game tr.tier_row {
+	width: 100%;
+	text-align: center;
+}
+
+#game tr.tier_row > td {
+	padding: 16px 0;
+}
+
+#game tr.tier_row {
+	width: 100%;
+	text-align: center;
+	border-top: 1px solid white;
+}
+
+#game tr.tier_row:first-child {
+	border-top: none;
+}
+
+#game tr.tier_row.hidden_row {
+	display: none;
+	border: none;
+}
+
 .formatted_table {
-	//border-spacing: 10px;
 	border: 1px solid #DDD;
 	border-collapse: collapse;
 }
