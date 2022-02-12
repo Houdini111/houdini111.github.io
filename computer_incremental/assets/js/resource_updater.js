@@ -16,7 +16,7 @@ class ResourceUpdater {
     }
 
     updateAllResources(save_data) {
-        for (let mapping of this.mappings) {
+        for (let [path, mapping] of this.mappings) {
             let valueForResource = save_data.getResourceFromPath(mapping.resourcePath);
             mapping.updateValues(valueForResource);
         }
@@ -37,10 +37,10 @@ class ResourceUpdater {
     updateResource(resource, save_data) {
         let mappingForResource = this.mappings.get(resource);
         if (mappingForResource == null) {
-            continue;
+            return;
         }
         let valueForResource = save_data.getResourceFromPath(resource);
-        mapping.updateValues(valueForResource);
+        mappingForResource.updateValues(valueForResource);
     }
 }
 

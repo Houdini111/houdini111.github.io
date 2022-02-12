@@ -1,5 +1,5 @@
 let target_framerate = 60;
-let target_frametime = -1;
+let target_frametime;
 
 let debug_info_div;
 let framerate_info_div;
@@ -52,8 +52,8 @@ function init_mappings() {
 	resourceUpdater.addMapping('transistors', 'transistor_count');
 	resourceUpdater.addMapping('not_gates', 'not_gate_count');
 	resourceUpdater.addMapping('and_gates', 'and_gate_count');
-	resourceUpdater.addMapping('or_gates', 'or_gates');
-	resourceUpdater.addMapping('xor_gates', 'xor_gates');
+	resourceUpdater.addMapping('or_gates', 'or_gate_count');
+	resourceUpdater.addMapping('xor_gates', 'xor_gate_count');
 }
 
 function init_transactions() {
